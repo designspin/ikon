@@ -1,4 +1,7 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -10,7 +13,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Typography from '@material-ui/core/Typography';
 import Navigation from './Navigation';
 import SignOutButton from './SignOut';
-import AuthUserContext from './AuthUserContext';
 
 const drawerWidth = 240;
 
@@ -67,7 +69,7 @@ class ResponsiveDrawer extends React.Component {
 
   render() {
 
-    const { classes, theme } = this.props;
+    const { classes, theme, authUser } = this.props;
 
     return (
       <div className={classes.root}>
@@ -88,12 +90,12 @@ class ResponsiveDrawer extends React.Component {
               noWrap>
               IKON
             </Typography>
-            <AuthUserContext.Consumer>
-              {authUser => authUser
-                ? <SignOutButton />
-                : null
-              }
-            </AuthUserContext.Consumer>
+            
+            {authUser
+              ? <SignOutButton />
+              : null
+            }
+            
           </Toolbar>
         </AppBar>
         <Hidden mdUp>
@@ -136,4 +138,12 @@ ResponsiveDrawer.propTypes = {
   theme: PropTypes.object.isRequired
 }
 
-export default withStyles(styles, { withTheme: true })(ResponsiveDrawer);
+const mapStateToProps = (state) => ({
+  authUser: state.sessionState.authUser
+});
+
+export default compose(
+  withRouter,
+  withStyles(styles, { withTheme: true }),
+  connect(mapStateToProps, null)
+)(ResponsiveDrawer)

@@ -1,4 +1,6 @@
 import React from 'react';
+import { compose } from 'recompose';
+
 import {
   BrowserRouter as Router,
   Route
@@ -49,4 +51,7 @@ const App = () =>
     </Drawer>
   </Router>
 
-export default withAuthentication(withMaterial(App));
+export default compose(
+  withMaterial,
+  withAuthentication
+)(App);
