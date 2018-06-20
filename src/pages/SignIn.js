@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
 import TextField from '@material-ui/core/TextField';
 
-import SnackBar, { openSnackbar, closeSnackBar } from '../components/SnackBar';
-import { SnackContentWrapper } from '../components/SnackBar/content';
 import { SoloFormWrapper } from '../components/wrappers';
 import { withStyles } from '@material-ui/core/styles';
 import { SignUpLink } from './SignUp';
@@ -53,17 +53,19 @@ class Form extends Component {
     } = this.state;
 
     const {
-      history
+      history,
+      noticeMessage
     } = this.props
 
     auth.doSignInWithEmailAndPassword(email, password)
       .then(() => {
         this.setState(() => ({ ...INITIAL_STATE }));
+        noticeMessage('success', 'Log in success');
         history.push(routes.HOME);
       })
       .catch(error => {
         this.setState(byPropKey('error', error));
-        openSnackbar();
+        noticeMessage('error', error.message );
       });
 
       event.preventDefault();
@@ -114,22 +116,22 @@ class Form extends Component {
           variant="outlined" 
           color="primary" 
           type="submit">Sign In</Button>
-        <SnackBar>
-          { error && 
-            <SnackContentWrapper
-              message={error.message}
-              variant="error"
-              onClose={closeSnackBar}
-            /> }
-        </SnackBar>
       </form>
     );
   }
 }
 
-const SignInForm = withStyles(styles, {withTheme: true})(Form);
+const mapDispatchToProps = (dispatch) => ({
+  noticeMessage: (variant, message) => dispatch({ type: 'NOTICE_MESSAGE_SET', payload: { variant, message } })
+});
+
+const SignInForm = compose(
+  withStyles(styles, {withTheme: true}),
+  connect(null, mapDispatchToProps)
+)(Form);
 
 export default withRouter(SignInPage);
+
 export {
   SignInForm,
 }

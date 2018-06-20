@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
+
 import { 
   Link,
   withRouter,
@@ -9,8 +12,6 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { SoloFormWrapper } from '../components/wrappers';
 import { withStyles } from '@material-ui/core/styles';
-import SnackBar, { openSnackbar, closeSnackBar } from '../components/SnackBar';
-import { SnackContentWrapper } from '../components/SnackBar/content';
 
 import * as routes from '../constants/routes';
 
@@ -54,16 +55,18 @@ class Form extends Component {
 
     const {
       history,
+      noticeMessage
     } = this.props;
 
     auth.doCreateUserWithEmailAndPassword(email, passwordOne)
       .then(authUser => {
         this.setState(() => ({ ...INITIAL_STATE}));
+        noticeMessage('success', 'Your account was created successfully, our admins will check you application and grant relevant access.')
         history.push(routes.HOME);
       })
       .catch(error => {
         this.setState(byPropKey('error', error));
-        openSnackbar();
+        noticeMessage('error', error.message);
       });
       event.preventDefault();
   }
@@ -137,19 +140,19 @@ class Form extends Component {
           variant="outlined" 
           color="primary" 
           type="submit">Sign In</Button>
-
-        <SnackBar>
-          { error && 
-            <SnackContentWrapper
-              message={error.message}
-              variant="error"
-              onClose={closeSnackBar}
-            /> }
-        </SnackBar>
         </form>
     );
   }
 }
+
+const mapDispatchToProps = (dispatch) => ({
+  noticeMessage: (variant, message) => dispatch({ type: 'NOTICE_MESSAGE_SET', payload: { variant, message } })
+});
+
+const SignUpForm = compose(
+  withStyles(styles, {withTheme: true}),
+  connect(null, mapDispatchToProps)
+)(Form);
 
 const SignUpLink = () => 
   <Typography
@@ -162,8 +165,6 @@ const SignUpLink = () =>
     {' '}
     <Link to={routes.SIGN_UP}>Sign Up</Link>
   </Typography>
-
-const SignUpForm = withStyles(styles, {withTheme: true})(Form);
 
 export default withRouter(SignUpPage);
 

@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
-import SnackBar, { openSnackbar, closeSnackBar } from '../components/SnackBar';
-import { SnackContentWrapper } from '../components/SnackBar/content';
 
 import { auth } from '../firebase';
 
@@ -36,13 +35,16 @@ class Form extends Component {
   onSubmit = (event) => {
     const { passwordOne } = this.state;
 
+    const { noticeMessage } = this.props;
+
     auth.doPasswordUpdate(passwordOne)
       .then(() => {
         this.setState(() => ({ ...INITIAL_STATE }));
+        noticeMessage('success', 'Your password has been changed.')
       })
       .catch(error => {
         this.setState(byPropKey('error', error));
-        openSnackbar();
+        noticeMessage('error', error.message);
       })
 
       event.preventDefault();
@@ -91,21 +93,16 @@ class Form extends Component {
           variant="outlined" 
           color="primary" 
           type="submit">Change Password</Button>
-
-        <SnackBar>
-          { error && 
-            <SnackContentWrapper
-              message={error.message}
-              variant="error"
-              onClose={closeSnackBar}
-            /> }
-        </SnackBar>
       </form>
     );
   }
 }
 
+const mapDispatchToProps = (dispatch) => ({
+  noticeMessage: (variant, message) => dispatch({ type: 'NOTICE_MESSAGE_SET', payload:{ variant, message }})
+});
 
-const PasswordChangeForm = withStyles(styles)(Form);
-
-export default PasswordChangeForm;
+export default compose(
+  withStyles(styles),
+  connect(null,mapDispatchToProps)
+)(Form);

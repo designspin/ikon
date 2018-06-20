@@ -1,15 +1,21 @@
 const INITIAL_STATE = {
   noticeOpen: false,
-  noticeType: '',
-  message: ''
+  noticeType: 'info',
+  noticeMessage: ''
 }
 
 const applySetNoticeMessage = (state, action) => ({
-
-})
+  ...state,
+  noticeOpen: true,
+  noticeType: action.payload.variant,
+  noticeMessage: action.payload.message
+});
 
 const applyCloseNoticeMessage = (state, action) => ({
-
+  ...state,
+  noticeOpen: false,
+  noticeType: state.noticeType,
+  noticeMessage: state.noticeMessage
 })
 
 function noticeReducer(state = INITIAL_STATE, action) {
@@ -23,4 +29,6 @@ function noticeReducer(state = INITIAL_STATE, action) {
     default: return state;
   }
 }
+
+export default noticeReducer;
 

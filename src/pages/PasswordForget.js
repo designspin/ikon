@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import { Link } from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import { SoloFormWrapper } from '../components/wrappers';
-import SnackBar, { openSnackbar, closeSnackBar } from '../components/SnackBar';
-import { SnackContentWrapper } from '../components/SnackBar/content';
 
 import * as routes from '../constants/routes';
 
@@ -41,14 +41,16 @@ class Form extends Component {
 
   onSubmit = (event) => {
     const { email } = this.state;
+    const { noticeMessage } = this.props;
 
     auth.doPasswordReset(email)
       .then(() => {
         this.setState(() => ({ ...INITIAL_STATE }));
+        noticeMessage('success', 'Check your email for reset instructions');
       })
       .catch(error => {
         this.setState(byPropKey('error', error));
-        openSnackbar();
+        noticeMessage('error', error.message );
       })
 
       event.preventDefault();
@@ -85,19 +87,19 @@ class Form extends Component {
           variant="outlined" 
           color="primary" 
           type="submit">Reset Password</Button>
-
-        <SnackBar>
-          { error && 
-            <SnackContentWrapper
-              message={error.message}
-              variant="error"
-              onClose={closeSnackBar}
-            /> }
-        </SnackBar>
       </form>
     );
   }
 }
+
+const mapDispatchToProps = (dispatch) => ({
+  noticeMessage: (variant, message) => dispatch({ type: 'NOTICE_MESSAGE_SET', payload: { variant, message } })
+});
+
+const PasswordForgetForm = compose(
+  withStyles(styles),
+  connect(null, mapDispatchToProps)
+)(Form);
 
 const PasswordForgetLink = () => 
   <Typography
@@ -108,8 +110,6 @@ const PasswordForgetLink = () =>
   >
     <Link to={routes.PASSWORD_FORGET}>Forgot Password?</Link>
   </Typography>
-
-const PasswordForgetForm = withStyles(styles)(Form);
 
 export default PasswordForgetPage;
 

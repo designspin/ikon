@@ -13,6 +13,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Typography from '@material-ui/core/Typography';
 import Navigation from './Navigation';
 import SignOutButton from './SignOut';
+import Noticebar from './notice';
 
 const drawerWidth = 240;
 
@@ -128,6 +129,7 @@ class ResponsiveDrawer extends React.Component {
           <div className={classes.toolbar} />
           {this.props.children}
         </main>
+        <Noticebar />
       </div>
     );
   }

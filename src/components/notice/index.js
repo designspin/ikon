@@ -1,54 +1,36 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { connect } from 'react-redux';
 import SnackBar from '@material-ui/core/Snackbar';
+import NoticeBarContent from './content';
 
-let openSnackBarFn;
-let closeSnackBarFn
-
-class CustomisedSnackBars extends Component {
-  state = {
-    open: false,
-  };
-
-  componentDidMount() {
-    openSnackBarFn = this.openBar;
-    closeSnackBarFn = this.closeBar;
-  }
-
-  openBar = () => {
-    this.setState({ open: true })
-  }
-
-  closeBar = (event, reason) => {
-    if( reason === 'clickaway') {
-      return;
-    }
-
-    this.setState({ open: false });
-  }
-
-  render() {
-    return (
-      <SnackBar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        open={this.state.open}
-        autoHideDuration={6000}
-        onClose={this.closeBar}
-      >
-        {this.props.children}
-      </SnackBar>
-    )
-  }
+const NoticeBar = (props) => {
+  return (
+    <SnackBar
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center',
+      }}
+      open={props.open}
+      autoHideDuration={6000}
+      onClose={props.close}
+    >
+      <NoticeBarContent 
+        variant={props.variant}
+        message={props.message}
+        onClose={props.close}
+      />
+    </SnackBar>
+  )
 }
 
-export function openSnackbar() {
-  openSnackBarFn();
-}
+const mapStateToProps = (state) => ({
+  open: state.noticeState.noticeOpen,
+  message: state.noticeState.noticeMessage,
+  variant: state.noticeState.noticeType
+});
 
-export function closeSnackBar() {
-  closeSnackBarFn();
-}
+const mapDispatchToProps = (dispatch) => ({
+  close: () => dispatch({ type: 'NOTICE_MESSAGE_CLOSE', action: null })
+});
 
-export default CustomisedSnackBars;
+export default connect(mapStateToProps, mapDispatchToProps)(NoticeBar);
