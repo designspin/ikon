@@ -1,19 +1,22 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 import Hidden from '@material-ui/core/Hidden';
 import MenuIcon from '@material-ui/icons/Menu';
 import Typography from '@material-ui/core/Typography';
 import Navigation from './Navigation';
-import SignOutButton from './SignOut';
+import UserMenu from './account/user-menu';
 import Noticebar from './notice';
+
+import * as routes from '../constants/routes';
 
 const drawerWidth = 240;
 
@@ -93,8 +96,13 @@ class ResponsiveDrawer extends React.Component {
             </Typography>
             
             {authUser
-              ? <SignOutButton />
-              : null
+              ? <UserMenu />
+              : <Button 
+                  component={ Link } 
+                  to={routes.SIGN_IN} 
+                  color="inherit">
+                  Sign In
+                </Button>
             }
             
           </Toolbar>

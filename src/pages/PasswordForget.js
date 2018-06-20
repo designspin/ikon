@@ -29,7 +29,6 @@ const styles = theme => ({
 
 const INITIAL_STATE = {
   email: '',
-  error: null,
 };
 
 class Form extends Component {
@@ -49,7 +48,6 @@ class Form extends Component {
         noticeMessage('success', 'Check your email for reset instructions');
       })
       .catch(error => {
-        this.setState(byPropKey('error', error));
         noticeMessage('error', error.message );
       })
 
@@ -59,7 +57,6 @@ class Form extends Component {
   render() {
     const {
       email,
-      error,
     } = this.state;
 
     const isInvalid = email === '';
@@ -70,7 +67,8 @@ class Form extends Component {
       <form onSubmit={this.onSubmit}>
         <Typography 
           gutterBottom
-          variant="headline" 
+          variant="headline"
+          align="center"
           component="h1">Password Reset</Typography>
         <TextField
           fullWidth

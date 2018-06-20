@@ -36,7 +36,6 @@ const styles = theme => ({
 const INITIAL_STATE = {
   email: '',
   password: '',
-  error: null,
 }
 
 class Form extends Component {
@@ -64,7 +63,6 @@ class Form extends Component {
         history.push(routes.HOME);
       })
       .catch(error => {
-        this.setState(byPropKey('error', error));
         noticeMessage('error', error.message );
       });
 
@@ -75,7 +73,6 @@ class Form extends Component {
     const {
       email,
       password,
-      error,
     } = this.state;
 
     const isInvalid =

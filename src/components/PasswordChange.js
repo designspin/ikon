@@ -22,7 +22,6 @@ const styles = theme => ({
 const INITIAL_STATE = {
   passwordOne: '',
   passwordTwo: '',
-  error: null,
 };
 
 class Form extends Component {
@@ -43,7 +42,6 @@ class Form extends Component {
         noticeMessage('success', 'Your password has been changed.')
       })
       .catch(error => {
-        this.setState(byPropKey('error', error));
         noticeMessage('error', error.message);
       })
 
@@ -54,7 +52,6 @@ class Form extends Component {
     const {
       passwordOne,
       passwordTwo,
-      error,
     } = this.state;
 
     const isInvalid = passwordOne !== passwordTwo || passwordOne === '';

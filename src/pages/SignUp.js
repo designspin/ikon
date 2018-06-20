@@ -27,7 +27,6 @@ const INITIAL_STATE = {
   email: '',
   passwordOne: '',
   passwordTwo: '',
-  error: null,
 }
 
 const byPropKey = (propertyName, value) => () => ({
@@ -65,7 +64,6 @@ class Form extends Component {
         history.push(routes.HOME);
       })
       .catch(error => {
-        this.setState(byPropKey('error', error));
         noticeMessage('error', error.message);
       });
       event.preventDefault();
@@ -77,7 +75,6 @@ class Form extends Component {
       email,
       passwordOne,
       passwordTwo,
-      error,
     } = this.state;
 
     const isInvalid =
@@ -93,8 +90,9 @@ class Form extends Component {
       
         <Typography 
           gutterBottom
+          align="center"
           variant="headline" 
-          component="h1">Sign Up For An Account</Typography>
+          component="h1">Request An Account</Typography>
         <TextField
           fullWidth
           required

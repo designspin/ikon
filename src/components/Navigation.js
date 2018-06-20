@@ -20,10 +20,7 @@ const Navigation = (props) => {
       <div className={classes.toolbar} />
       <Divider />
       <List component="nav">
-        <ListItem component={Link} to={routes.SIGN_IN} button><ListItemText>Sign In</ListItemText></ListItem>
-        <ListItem component={Link} to={routes.LANDING} button><ListItemText>Landing</ListItemText></ListItem>
-        <ListItem component={Link} to={routes.HOME} button><ListItemText>Home</ListItemText></ListItem>
-        <ListItem component={Link} to={routes.ACCOUNT} button><ListItemText>Account</ListItemText></ListItem>
+        <ListItem component={Link} to={routes.LANDING} button><ListItemText>Home</ListItemText></ListItem>
       </List>
     </div>
   );
