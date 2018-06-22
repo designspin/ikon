@@ -1,4 +1,5 @@
 import { auth, functions, db } from './firebase';
+import store from '../store';
 
 //Sign Up
 export const doCreateUserWithEmailAndPassword = (email, password, username) =>
@@ -13,10 +14,19 @@ export const doCreateUserWithEmailAndPassword = (email, password, username) =>
 //Sign In
 export const doSignInWithEmailAndPassword = (email, password) =>
   auth.signInWithEmailAndPassword(email, password)
-  .then((result) =>{
+  .then((authUser) => {
     const setClaims = functions.httpsCallable('setClaims');
-      return setClaims(result.user.uid).then((result) => {
-        console.log(result);
+      setClaims().then((result) => {
+        if(result.data.roles) {
+          auth.currentUser.getIdToken(true)
+          auth.currentUser.getIdTokenResult()
+          .then((idTokenResult) => {
+            if(!!idTokenResult.claims.roles) {
+              const authRoles = idTokenResult.claims.roles;
+              store.dispatch({ type: "AUTH_ROLE_SET", authRoles })
+            }
+          });
+        }
       });
   });
 
