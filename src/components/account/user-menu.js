@@ -27,6 +27,7 @@ class UserMenu extends Component {
 
     return [
       <IconButton
+        key="user-menu-btn"
         aria-owns={open ? 'user-menu' : null}
         aria-haspopup="true"
         onClick={this.handleMenu}

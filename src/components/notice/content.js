@@ -46,7 +46,6 @@ const styles = theme => ({
 });
 
 const SnackContent = (props) => {
-  console.log(props);
   const { classes, className, message, onClose, variant, ...other } = props;
   const Icon = variantIcon[variant];
 

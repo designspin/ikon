@@ -57,10 +57,10 @@ class Form extends Component {
       noticeMessage
     } = this.props;
 
-    auth.doCreateUserWithEmailAndPassword(email, passwordOne)
+    auth.doCreateUserWithEmailAndPassword(email, passwordOne, username)
       .then(authUser => {
         this.setState(() => ({ ...INITIAL_STATE}));
-        noticeMessage('success', 'Your account was created successfully, our admins will check you application and grant relevant access.')
+        noticeMessage('success', 'Your account was created successfully, our admins will check your application and grant relevant access.')
         history.push(routes.HOME);
       })
       .catch(error => {

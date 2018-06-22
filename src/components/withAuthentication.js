@@ -11,7 +11,7 @@ const withAuthentication = (Component) => {
         authUser
           ? onSetAuthUser(authUser)
           : onSetAuthUser(null);
-      });
+        });
     }
     
     render() {
