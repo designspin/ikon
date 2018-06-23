@@ -12,6 +12,6 @@ const HomePage = () =>
     <Typography>This page is accesible to any signed in user.</Typography>
   </div>
 
-const authCondition = (authUser) => !!authUser;
+const authCondition = (authRoles) => true;
 
 export default withAuthorisation(authCondition)(HomePage);

@@ -1,11 +1,23 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { compose } from 'recompose';
-import { withRouter } from 'react-router-dom';
-import { firebase } from '../firebase';
-import * as routes from '../constants/routes';
+//import { compose } from 'recompose';
+//import { withRouter } from 'react-router-dom';
+//import { firebase } from '../firebase';
+//import * as routes from '../constants/routes';
 
 const withAuthorisation = (authCondition) => (Component) => {
+  const AuthorisedComponent = ({ authUser, authRoles }) => {
+    return authUser && authCondition(authRoles) ? <Component /> : null;
+  }
+
+  const mapStateToProps = (state) => ({
+    authUser: state.sessionState.authUser,
+    authRoles: state.sessionState.authRoles
+  });
+
+  return connect(mapStateToProps)(AuthorisedComponent)
+}
+/*const withAuthorisation = (authCondition) => (Component) => {
   class WithAuthorisation extends React.Component {
     componentDidMount() {
       firebase.auth.onIdTokenChanged(authUser => {
@@ -31,6 +43,6 @@ const withAuthorisation = (authCondition) => (Component) => {
     withRouter,
     connect(mapStateToProps)
   )(WithAuthorisation);
-}
+}*/
 
 export default withAuthorisation;

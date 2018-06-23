@@ -4,6 +4,7 @@ import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import Progress from '@material-ui/core/CircularProgress';
 
 import TextField from '@material-ui/core/TextField';
 
@@ -28,6 +29,17 @@ const byPropKey = (propertyName, value) => () => ({
 });
 
 const styles = theme => ({
+  wrapper: {
+    position: "relative",
+    display: "inline-block"
+  },
+  spinner: {
+    position: "absolute",
+    left: "50%",
+    top: "50%",
+    marginTop: "-12px",
+    marginLeft: "-12px"
+  },
   button: {
     marginTop: theme.spacing.unit * 2
   }
@@ -36,6 +48,7 @@ const styles = theme => ({
 const INITIAL_STATE = {
   email: '',
   password: '',
+  submitting: false
 }
 
 class Form extends Component {
@@ -56,7 +69,8 @@ class Form extends Component {
       noticeMessage
     } = this.props
 
-    auth.doSignInWithEmailAndPassword(email, password)
+    this.setState({ submitting: true });
+      auth.doSignInWithEmailAndPassword(email, password)
       .then(() => {
         this.setState(() => ({ ...INITIAL_STATE }));
         noticeMessage('success', 'Log in success');
@@ -82,7 +96,7 @@ class Form extends Component {
     const { classes } = this.props;
     
     return (
-      <form onSubmit={this.onSubmit}>
+      <form className={classes.form} onSubmit={this.onSubmit}>
         <Typography 
           gutterBottom
           align="center"
@@ -95,6 +109,7 @@ class Form extends Component {
           label="Email"
           placeholder="Email"
           value={email}
+          disabled={this.state.submitting}
           onChange={event => this.setState(byPropKey('email', event.target.value))}
         />
         <TextField
@@ -105,14 +120,18 @@ class Form extends Component {
           placeholder="Password"
           type="password"
           value={password}
+          disabled={this.state.submitting}
           onChange={event => this.setState(byPropKey('password', event.target.value))}
         />
-        <Button 
-          disabled={isInvalid}
-          classes={{ root: classes.button }}
-          variant="outlined" 
-          color="primary" 
-          type="submit">Sign In</Button>
+        <div className={classes.wrapper}>
+          <Button 
+            disabled={isInvalid || this.state.submitting}
+            classes={{ root: classes.button }}
+            variant="outlined" 
+            color="primary" 
+            type="submit">Sign In</Button>
+          {this.state.submitting && <Progress size={24} className={classes.spinner} />}
+        </div>
       </form>
     );
   }

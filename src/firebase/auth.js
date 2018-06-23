@@ -16,7 +16,7 @@ export const doSignInWithEmailAndPassword = (email, password) =>
   auth.signInWithEmailAndPassword(email, password)
   .then((authUser) => {
     const setClaims = functions.httpsCallable('setClaims');
-      setClaims().then((result) => {
+      return setClaims().then((result) => {
         if(result.data.roles) {
           auth.currentUser.getIdToken(true)
           auth.currentUser.getIdTokenResult()

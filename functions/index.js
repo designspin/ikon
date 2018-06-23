@@ -8,14 +8,9 @@ exports.setClaims = functions.https.onCall((data, context) => {
   
   return ref.get().then((doc) => {
     if ( doc.exists ) {
-
         const docData = doc.data();
-
-        console.log( docData );
-
         return admin.auth().setCustomUserClaims(context.auth.uid, { roles: docData.roles })
         .then(() => {
-          console.log(`Claims Set`);
           return { roles: docData.roles };
         })
     } else {
