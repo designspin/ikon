@@ -37,8 +37,8 @@ const styles = theme => ({
     position: "absolute",
     left: "50%",
     top: "50%",
-    marginTop: "-12px",
-    marginLeft: "-12px"
+    marginTop: -6,
+    marginLeft: -12
   },
   button: {
     marginTop: theme.spacing.unit * 2
@@ -78,6 +78,7 @@ class Form extends Component {
       })
       .catch(error => {
         noticeMessage('error', error.message );
+        this.setState({ submitting: false});
       });
 
       event.preventDefault();

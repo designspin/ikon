@@ -8,7 +8,6 @@ import withAuthorisation from '../components/withAuthorisation';
 import { auth } from '../firebase/firebase';
 
 const AccountPage = ({authUser}) => {
-console.log(authUser);
   return (
     <div>
       <Typography
@@ -26,7 +25,7 @@ const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
 })
 
-const authCondition = (authRoles) => 
+const authCondition = (authUser, authRoles) => 
   authRoles && Object.keys(authRoles).includes('admin');
 
 

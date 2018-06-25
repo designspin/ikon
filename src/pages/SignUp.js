@@ -97,8 +97,8 @@ class Form extends Component {
           fullWidth
           required
           margin="dense"
-          label="Username"
-          placeholder="Username"
+          label="Fullname"
+          placeholder="Fullname"
           value={username}
           onChange={event => this.setState(byPropKey('username', event.target.value))}
         />
@@ -137,7 +137,7 @@ class Form extends Component {
           classes={{ root: classes.button }}
           variant="outlined" 
           color="primary" 
-          type="submit">Sign In</Button>
+          type="submit">Request Account</Button>
         </form>
     );
   }

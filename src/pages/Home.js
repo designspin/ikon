@@ -1,6 +1,6 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import withAuthorisation from '../components/withAuthorisation';
+import { withAuthorisationRedirect } from '../components/withAuthorisation';
 
 const HomePage = () =>
   <div>
@@ -12,6 +12,8 @@ const HomePage = () =>
     <Typography>This page is accesible to any signed in user.</Typography>
   </div>
 
-const authCondition = (authRoles) => true;
+const authCondition = (authUser) => { 
+  return authUser;
+}
 
-export default withAuthorisation(authCondition)(HomePage);
+export default withAuthorisationRedirect(authCondition)(HomePage);

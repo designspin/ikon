@@ -5,8 +5,18 @@ import store from '../store';
 export const doCreateUserWithEmailAndPassword = (email, password, username) =>
   auth.createUserWithEmailAndPassword(email, password)
   .then((data) => {
+    const fullname = username.toLowerCase();
+
     db.collection('users').doc(`${data.user.uid}`).set({
-      username
+      fullname
+    });
+
+    db.collection('user_roles').doc(`${data.user.uid}`).set({
+      roles: {
+        admin: false,
+        staff: false,
+        client: false
+      }
     });
     return data;
   })
