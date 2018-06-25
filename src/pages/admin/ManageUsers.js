@@ -330,7 +330,7 @@ EnhancedTable.propTypes = {
 };
 
 const authCondition = (authUser, authRoles) => {
-  return authUser && authRoles && Object.key(authRoles).includes('admin')
+  return authUser && authRoles && Object.keys(authRoles).includes('admin')
 }
 
 export default compose(
