@@ -2,9 +2,10 @@ import { combineReducers } from 'redux';
 import sessionReducer from './session';
 import noticeReducer from './notice';
 
-const rootReducer = combineReducers({
+const rootReducer = asyncReducers => combineReducers({
   sessionState: sessionReducer,
-  noticeState: noticeReducer
+  noticeState: noticeReducer,
+  ...asyncReducers
 });
 
 export default rootReducer;

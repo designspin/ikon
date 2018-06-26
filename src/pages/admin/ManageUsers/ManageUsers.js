@@ -1,6 +1,6 @@
 import React from 'react';
 import { compose } from 'recompose';
-import { withAuthorisationRedirect } from '../../components/withAuthorisation';
+import { withAuthorisationRedirect } from '../../../components/withAuthorisation';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -192,9 +192,9 @@ class EnhancedTable extends React.Component {
       orderBy: 'email',
       selected: [],
       data: [
-        createData('Jason Foster', 'jason@designspin.co.uk', 1, 0, 0),
-        createData('Jason Foster', 'admin@designspin.co.uk', 1, 0, 0),
-        createData('Jason Foster', 'jaymonkey77@gmail.com', 0, 0, 0),
+        createData('Jason Foster', '***', 1, 0, 0),
+        createData('Jason Foster', '***', 1, 0, 0),
+        createData('Jason Foster', '***', 0, 0, 0),
       ],
       page: 0,
       rowsPerPage: 5,

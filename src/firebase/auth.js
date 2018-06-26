@@ -25,19 +25,27 @@ export const doCreateUserWithEmailAndPassword = (email, password, username) =>
 export const doSignInWithEmailAndPassword = (email, password) =>
   auth.signInWithEmailAndPassword(email, password)
   .then((authUser) => {
-    const setClaims = functions.httpsCallable('setClaims');
-      return setClaims().then((result) => {
-        if(result.data.roles) {
-          auth.currentUser.getIdToken(true)
-          auth.currentUser.getIdTokenResult()
-          .then((idTokenResult) => {
-            if(!!idTokenResult.claims.roles) {
-              const authRoles = idTokenResult.claims.roles;
-              store.dispatch({ type: "AUTH_ROLE_SET", authRoles })
+    return auth.currentUser.getIdTokenResult()
+      .then((idTokenResult) => {
+        if(!!idTokenResult.claims.roles) {
+          const authRoles = idTokenResult.claims.roles
+          return store.dispatch({ type: "AUTH_ROLE_SET", authRoles})
+        } else {
+          const setClaims = functions.httpsCallable('setClaims');
+          return setClaims().then((result) => {
+            if(result.data.roles) {
+              auth.currentUser.getIdToken(true)
+              auth.currentUser.getIdTokenResult()
+              .then((idTokenResult) => {
+                if(!!idTokenResult.claims.roles) {
+                  const authRoles = idTokenResult.claims.roles;
+                  return store.dispatch({ type: "AUTH_ROLE_SET", authRoles })
+                }
+              });
             }
           });
         }
-      });
+      })
   });
 
 //Sign Out
