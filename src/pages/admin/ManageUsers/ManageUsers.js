@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { withAuthorisationRedirect } from '../../../components/withAuthorisation';
 import classNames from 'classnames';
@@ -21,11 +22,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 
-let counter = 0;
-function createData(name, email, admin, staff, client) {
-  counter += 1;
-  return { id: counter, name, email, admin, staff, client };
-}
+import { getUserData } from '../../../reducers/manage_users/manage_users';
+
 
 function getSorting(order, orderBy) {
   return order === 'desc'
@@ -186,16 +184,7 @@ const styles = theme => ({
 class EnhancedTable extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
-      order: 'asc',
-      orderBy: 'email',
-      selected: [],
-      data: [
-        createData('Jason Foster', '***', 1, 0, 0),
-        createData('Jason Foster', '***', 1, 0, 0),
-        createData('Jason Foster', '***', 0, 0, 0),
-      ],
       page: 0,
       rowsPerPage: 5,
     };
@@ -205,23 +194,24 @@ class EnhancedTable extends React.Component {
     const orderBy = property;
     let order = 'desc';
 
-    if (this.state.orderBy === property && this.state.order === 'desc') {
+    if (this.props.orderBy === property && this.props.order === 'desc') {
       order = 'asc';
     }
 
-    this.setState({ order, orderBy });
+    this.props.reOrderUsers(order, orderBy);
   };
 
   handleSelectAllClick = (event, checked) => {
     if (checked) {
-      this.setState({ selected: this.state.data.map(n => n.id) });
+      //this.setState({ selected: this.state.data.map(n => n.id) });
+      this.props.updateSelectedUsers( this.props.data.map(n => n.id));
       return;
     }
-    this.setState({ selected: [] });
+    this.props.updateSelectedUsers([]);
   };
 
   handleClick = (event, id) => {
-    const { selected } = this.state;
+    const { selected } = this.props;
     const selectedIndex = selected.indexOf(id);
     let newSelected = [];
 
@@ -238,7 +228,7 @@ class EnhancedTable extends React.Component {
       );
     }
 
-    this.setState({ selected: newSelected });
+    this.props.updateSelectedUsers(newSelected);
   };
 
   handleChangePage = (event, page) => {
@@ -249,14 +239,22 @@ class EnhancedTable extends React.Component {
     this.setState({ rowsPerPage: event.target.value });
   };
 
-  isSelected = id => this.state.selected.indexOf(id) !== -1;
+  isSelected = id => this.props.selected.indexOf(id) !== -1;
+
+  componentDidMount() {
+    if(!this.props.data.length) {
+      this.props.fetchData();
+    }
+  }
 
   render() {
     const { classes } = this.props;
-    const { data, order, orderBy, selected, rowsPerPage, page } = this.state;
+    const { rowsPerPage, page } = this.state;
+    const { data, selected, order, orderBy } = this.props;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
     return (
+      
       <Paper className={classes.root}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <div className={classes.tableWrapper}>
@@ -329,11 +327,30 @@ EnhancedTable.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
+const mapStateToProps = (state) => {
+  return {
+    selected: (state.manageUsersState) ? state.manageUsersState.selected : [],
+    data: (state.manageUsersState) ? state.manageUsersState.data : [],
+    orderBy: (state.manageUsersState) ? state.manageUsersState.orderBy : 'email',
+    order: (state.manageUsersState) ? state.manageUsersState.order : 'asc',
+    page: (state.manageUsersState) ? state.manageUsersState.page : 0,
+    rowsPerPage: (state.manageUsersState) ? state.manageUsersState.rowsPerPage : 5
+  }
+};
+
+const mapDispatchToProps = (dispatch) => ({
+ fetchData: () => dispatch(getUserData()),
+ updateSelectedUsers: (users) => dispatch({ type: 'SELECTED_USERS_SET', payload: users }),
+ reOrderUsers: (order, orderBy) => dispatch({ type: 'ORDER_USERS_SET', payload: { order, orderBy }})
+});
+
 const authCondition = (authUser, authRoles) => {
   return authUser && authRoles && Object.keys(authRoles).includes('admin')
 }
 
 export default compose(
   withAuthorisationRedirect(authCondition),
-  withStyles(styles)
+  connect(mapStateToProps, mapDispatchToProps),
+  withStyles(styles),
+  
 )(EnhancedTable);

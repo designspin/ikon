@@ -7,8 +7,15 @@ export const doCreateUserWithEmailAndPassword = (email, password, username) =>
   .then((data) => {
     const fullname = username.toLowerCase();
 
-    db.collection('users').doc(`${data.user.uid}`).set({
+    /*db.collection('users').doc(`${data.user.uid}`).set({
       fullname
+    });*/
+
+    data.user.updateProfile({
+      displayName: fullname
+    })
+    .catch((error) => {
+      console.log("There was a problem creating the users display name");
     });
 
     db.collection('user_roles').doc(`${data.user.uid}`).set({
@@ -17,6 +24,9 @@ export const doCreateUserWithEmailAndPassword = (email, password, username) =>
         staff: false,
         client: false
       }
+    })
+    .catch((error) => {
+      console.log("There was a problem setting initial user roles");
     });
     return data;
   })

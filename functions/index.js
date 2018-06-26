@@ -1,5 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+
 admin.initializeApp();
 
 exports.setClaims = functions.https.onCall((data, context) => {
@@ -17,4 +18,18 @@ exports.setClaims = functions.https.onCall((data, context) => {
       return { roles: false }
     }
   })
+});
+
+exports.allUsers = functions.https.onCall((data, context) => {
+  if(data.nextPageToken) {
+    return admin.auth().listUsers(data.qty, data.nextPageToken)
+    .then((usersResult) => {
+      return usersResult;
+    })
+  } else {
+    return admin.auth().listUsers(data.qty)
+    .then((usersResult) => {
+      return usersResult;
+    })
+  }
 });
