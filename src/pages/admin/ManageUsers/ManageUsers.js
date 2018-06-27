@@ -450,12 +450,11 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const authCondition = (authUser, authRoles) => {
-  return authUser && authRoles && Object.keys(authRoles).includes('admin')
+  return !!authUser && !!authRoles && authRoles.admin;
 }
 
 export default compose(
   withAuthorisationRedirect(authCondition),
   withStyles(styles),
-  connect(mapStateToProps, mapDispatchToProps)
-  
+  connect(mapStateToProps, mapDispatchToProps),
 )(EnhancedTable);

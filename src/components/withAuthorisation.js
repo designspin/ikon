@@ -21,9 +21,9 @@ const withAuthorisation = (authCondition) => (Component) => {
 
 export const withAuthorisationRedirect = (authCondition) => (Component) => {
   class WithAuthorisation extends React.Component {
-    componentDidMount() {
+    componentWillMount() {
       firebase.auth.onIdTokenChanged(authUser => {
-        if(!authUser && !authCondition(authUser, this.props.authRoles)) {
+        if(!authCondition(authUser, this.props.authRoles)) {
           this.props.history.push(routes.SIGN_IN);
         }
       });

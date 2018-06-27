@@ -19,7 +19,7 @@ const AdminItems = (props) =>
     </List>
 
 const authCondition = (authUser, authRoles) => {
-  return authUser && authRoles && Object.keys(authRoles).includes('admin');
+  return authUser && authRoles && authRoles.admin;
 }
 
 const AuthorisedAdminItems = withAuthorisation(authCondition)(AdminItems);

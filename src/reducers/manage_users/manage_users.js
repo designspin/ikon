@@ -50,13 +50,14 @@ export function addBulkClaims() {
     const bulkClaims = functions.httpsCallable('bulkClaims');
     dispatch({ type: 'TOGGLE_USERS_PROCESSING' });
 
-    const { selected, toolbar } = state();
+    const { selected, toolbar } = state().manageUsersState;
 
-    return bulkClaims({ ids: selected, state: toolbar }).then((result) => {
+    return bulkClaims({ ids: selected, claims: toolbar }).then((result) => {
       console.log(result);
 
       dispatch({ type: 'TOGGLE_USERS_PROCESSING'});
     })
+    // dispatch({ type: 'TOGGLE_USERS_PROCESSING'});
   }
 }
 

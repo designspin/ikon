@@ -21,21 +21,13 @@ exports.setClaims = functions.https.onCall((data, context) => {
 });
 
 exports.bulkClaims = functions.https.onCall((data, context) => {
-  const { ids, claims } = data;
-  const failed = [];
-
-  if(!context.auth.token.claims.roles.admin) {
-    throw new functions.HttpsError('failed-precondition', 'This operation requires an admin user.');
-  }
-
+  
   const setClaimsData = () => {
     let success = [];
     let fail = [];
-
-    return new Promise((resolve, reject) => {
-      ids.forEach((userId) => {
+      return data.ids.map((userId) => {
         const ref = admin.firestore().collection('user_roles').doc(`${userId}`);
-        ref.set(claims)
+        return ref.set(data.claims)
         .then(() => {
           success.push(userId);
         })
@@ -43,32 +35,25 @@ exports.bulkClaims = functions.https.onCall((data, context) => {
           fail.push(userId);
         })
       });
-
-      resolve({ fail, success});
-    })
   }
 
   const setClaimsUser = () => {
     let success = [];
     let fail = [];
-
-    return new Promise((resolve, reject) => {
-      ids.forEach((userId) => {
-        admin.auth().setCustomUserClaims(userId, { roles: claims })
+      return data.ids.map((userId) => {
+        return admin.auth().setCustomUserClaims(userId, { roles: data.claims })
         .then(() => {
           success.push(userId);
         })
         .catch(() => {
           fail.push(userId)
         })
-      })
-
-      resolve({ fail, success });
-    })
+      });
   }
 
-  return Promise.all([setClaimsUser, setClaimsData]).then((values) => {
-    return { data: values[0], claims: values[1] };
+  return Promise.all([...setClaimsUser(), ...setClaimsData()]).then((values) => {
+    console.log(values);
+    return values;
   });
 });
 
