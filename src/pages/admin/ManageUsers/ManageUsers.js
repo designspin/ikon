@@ -17,13 +17,20 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
+import Check from '@material-ui/icons/CheckCircle';
+import Cancel from '@material-ui/icons/Cancel';
+import red from '@material-ui/core/colors/red';
+import green from '@material-ui/core/colors/green';
 
 import { getUserData } from '../../../reducers/manage_users/manage_users';
-
+import { addBulkClaims } from '../../../reducers/manage_users/manage_users';
 
 function getSorting(order, orderBy) {
   return order === 'desc'
@@ -96,6 +103,8 @@ EnhancedTableHead.propTypes = {
   rowCount: PropTypes.number.isRequired,
 };
 
+/* TOOLBAR */
+
 const toolbarStyles = theme => ({
   root: {
     paddingRight: theme.spacing.unit,
@@ -114,6 +123,7 @@ const toolbarStyles = theme => ({
     flex: '1 1 100%',
   },
   actions: {
+    flex: '0 0 auto',
     color: theme.palette.text.secondary,
   },
   title: {
@@ -122,7 +132,7 @@ const toolbarStyles = theme => ({
 });
 
 let EnhancedTableToolbar = props => {
-  const { numSelected, classes } = props;
+  const { numSelected, classes, toolbarState, update, processing, processData } = props;
 
   return (
     <Toolbar
@@ -144,11 +154,69 @@ let EnhancedTableToolbar = props => {
       <div className={classes.spacer} />
       <div className={classes.actions}>
         {numSelected > 0 ? (
-          <Tooltip title="Delete">
-            <IconButton aria-label="Delete">
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
+          
+            <FormGroup row>
+              <FormControlLabel
+                control={
+                  <Checkbox 
+                    checked={toolbarState.admin}
+                    onChange={(event) => {
+                      update({
+                        admin: event.target.checked,
+                        staff: toolbarState.staff,
+                        client: toolbarState.client
+                      })
+                    }}
+                    disabled={processing}
+                  />
+                }
+                label="Admin"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox 
+                    checked={toolbarState.staff}
+                    onChange={(event) => {
+                      update({
+                        admin: toolbarState.admin,
+                        staff: event.target.checked,
+                        client: toolbarState.client
+                      })
+                    }}
+                    disabled={processing}
+                  />
+                }
+                label="Staff"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox 
+                    checked={toolbarState.client}
+                    onChange={(event) => {
+                      update({
+                        admin: toolbarState.admin,
+                        staff: toolbarState.staff,
+                        client: event.target.checked
+                      })
+                    }}
+                    disabled={processing}
+                  />
+                }
+                label="Client"
+              />
+              <Tooltip title="Update Selection">
+                <Button
+                  onClick={processData}
+                  disabled={processing}
+                >Update</Button>
+              </Tooltip>
+              <Tooltip title="Delete Selection">
+                <IconButton aria-label="Delete">
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
+            </FormGroup>
+          
         ) : (
           <Tooltip title="Filter list">
             <IconButton aria-label="Filter list">
@@ -179,6 +247,12 @@ const styles = theme => ({
   tableWrapper: {
     overflowX: 'auto',
   },
+  iconOn: {
+    fill: green[500]
+  },
+  iconOff: {
+    fill: red[500]
+  }
 });
 
 class EnhancedTable extends React.Component {
@@ -236,27 +310,37 @@ class EnhancedTable extends React.Component {
   };
 
   handleChangeRowsPerPage = event => {
-    this.setState({ rowsPerPage: event.target.value });
+    this.props.updateRowsPerPage( event.target.value );
   };
 
   isSelected = id => this.props.selected.indexOf(id) !== -1;
 
   componentDidMount() {
-    if(!this.props.data.length) {
+    if(this.props.data && !this.props.data.length) {
       this.props.fetchData();
     }
   }
 
+  componentWillUnmount() {
+    this.props.reset();
+  }
+
   render() {
     const { classes } = this.props;
-    const { rowsPerPage, page } = this.state;
-    const { data, selected, order, orderBy } = this.props;
+    const { page } = this.state;
+    const { rowsPerPage, data, selected, processing, processData, order, orderBy, loading, toolbarState, updateToolBarState } = this.props;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
     return (
       
       <Paper className={classes.root}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar 
+          numSelected={selected.length} 
+          toolbarState={toolbarState}
+          update={updateToolBarState}
+          processing={processing}
+          processData={processData}
+        />
         <div className={classes.tableWrapper}>
           <Table className={classes.table} aria-labelledby="tableTitle">
             <EnhancedTableHead
@@ -267,6 +351,12 @@ class EnhancedTable extends React.Component {
               onRequestSort={this.handleRequestSort}
               rowCount={data.length}
             />
+            { loading 
+            ?
+            <TableBody>
+              <TableRow><TableCell scope="row" padding="none" colSpan="6">LOADING...</TableCell></TableRow>
+            </TableBody>
+            :
             <TableBody>
               {data
                 .sort(getSorting(order, orderBy))
@@ -284,15 +374,21 @@ class EnhancedTable extends React.Component {
                       selected={isSelected}
                     >
                       <TableCell padding="checkbox">
-                        <Checkbox checked={isSelected} />
+                        <Checkbox disabled={processing} checked={isSelected} />
                       </TableCell>
                       <TableCell component="td" scope="row" padding="none">
                         {n.name}
                       </TableCell>
                       <TableCell component="td" scope="row" padding="none">{n.email}</TableCell>
-                      <TableCell component="td" scope="row" padding="none">{n.admin ? 'Yes' : 'No'}</TableCell>
-                      <TableCell component="td" scope="row" padding="none">{n.staff ? 'Yes' : 'No'}</TableCell>
-                      <TableCell component="td" scope="row" padding="none">{n.client ? 'Yes' : 'No'}</TableCell>
+                      <TableCell component="td" scope="row" padding="none">
+                        {n.admin ? <Check className={classes.iconOn}/> : <Cancel className={classes.iconOff}/>}
+                      </TableCell>
+                      <TableCell component="td" scope="row" padding="none">
+                        {n.staff ? <Check className={classes.iconOn}/> : <Cancel className={classes.iconOff}/>}
+                      </TableCell>
+                      <TableCell component="td" scope="row" padding="none">
+                        {n.client ? <Check className={classes.iconOn}/> : <Cancel className={classes.iconOff}/>}
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -302,6 +398,7 @@ class EnhancedTable extends React.Component {
                 </TableRow>
               )}
             </TableBody>
+            }
           </Table>
         </div>
         <TablePagination
@@ -325,23 +422,31 @@ class EnhancedTable extends React.Component {
 
 EnhancedTable.propTypes = {
   classes: PropTypes.object.isRequired,
+  processData: PropTypes.func,
 };
 
 const mapStateToProps = (state) => {
   return {
-    selected: (state.manageUsersState) ? state.manageUsersState.selected : [],
-    data: (state.manageUsersState) ? state.manageUsersState.data : [],
-    orderBy: (state.manageUsersState) ? state.manageUsersState.orderBy : 'email',
-    order: (state.manageUsersState) ? state.manageUsersState.order : 'asc',
-    page: (state.manageUsersState) ? state.manageUsersState.page : 0,
-    rowsPerPage: (state.manageUsersState) ? state.manageUsersState.rowsPerPage : 5
+    selected: state.manageUsersState.selected,
+    data: state.manageUsersState.data ,
+    orderBy: state.manageUsersState.orderBy,
+    order: state.manageUsersState.order,
+    page: state.manageUsersState.page,
+    rowsPerPage: state.manageUsersState.rowsPerPage,
+    processing: state.manageUsersState.processing,
+    loading: state.manageUsersState.loading,
+    toolbarState: state.manageUsersState.toolbar
   }
 };
 
 const mapDispatchToProps = (dispatch) => ({
  fetchData: () => dispatch(getUserData()),
+ processData: () => dispatch(addBulkClaims()),
  updateSelectedUsers: (users) => dispatch({ type: 'SELECTED_USERS_SET', payload: users }),
- reOrderUsers: (order, orderBy) => dispatch({ type: 'ORDER_USERS_SET', payload: { order, orderBy }})
+ reOrderUsers: (order, orderBy) => dispatch({ type: 'ORDER_USERS_SET', payload: { order, orderBy }}),
+ reset: () => dispatch({ type: 'RESET_USERS' }),
+ updateRowsPerPage: (rows) => dispatch({ type: 'USERS_ROWS_PER_PAGE', payload: { rowsPerPage: rows }}),
+ updateToolBarState: (state) => dispatch({ type: 'USERS_TOOLBAR_STATE_SET', payload: state })
 });
 
 const authCondition = (authUser, authRoles) => {
@@ -350,7 +455,7 @@ const authCondition = (authUser, authRoles) => {
 
 export default compose(
   withAuthorisationRedirect(authCondition),
-  connect(mapStateToProps, mapDispatchToProps),
   withStyles(styles),
+  connect(mapStateToProps, mapDispatchToProps)
   
 )(EnhancedTable);

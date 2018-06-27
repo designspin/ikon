@@ -11,13 +11,12 @@ export default class DynamicImport extends Component {
 
     load().then((module) => {
       const { component, reducers } = module;
-
+      
       if(reducers) {
         reducers.forEach((reducer) => {
           injectReducers(store, reducer.name, reducer.fn);
         });
       }
-
       this.setState({
         component: component ? component : module.default
       });

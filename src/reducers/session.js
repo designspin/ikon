@@ -3,6 +3,10 @@ const INITIAL_STATE = {
   authRoles: null,
 }
 
+const applyGeneralReset = (state, action) => ({
+  ...state
+});
+
 const applySetAuthUser = (state, action) => ({
   ...state,
   authUser: action.authUser
@@ -17,6 +21,9 @@ const applyAuthReset = () => INITIAL_STATE;
 
 function sessionReducer(state = INITIAL_STATE, action) {
   switch(action.type) {
+    case 'RESET': {
+      return applyGeneralReset(state, action);
+    }
     case 'AUTH_USER_SET' : {
       return applySetAuthUser(state, action)
     }

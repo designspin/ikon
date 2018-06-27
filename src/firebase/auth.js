@@ -7,10 +7,6 @@ export const doCreateUserWithEmailAndPassword = (email, password, username) =>
   .then((data) => {
     const fullname = username.toLowerCase();
 
-    /*db.collection('users').doc(`${data.user.uid}`).set({
-      fullname
-    });*/
-
     data.user.updateProfile({
       displayName: fullname
     })

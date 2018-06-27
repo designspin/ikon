@@ -5,6 +5,7 @@ import rootReducer from '../reducers';
 export const injectReducers = (store, name, asyncReducer) => {
   store.asyncReducers[name] = asyncReducer;
   store.replaceReducer(rootReducer(store.asyncReducers));
+  store.dispatch({ type: 'RESET'})
 };
 
 export default (() => {
