@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
-import { withAuthorisationRedirect } from '../../../components/withAuthorisation';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -32,11 +31,36 @@ import green from '@material-ui/core/colors/green';
 
 import { getUserData } from '../../../reducers/manage_users/manage_users';
 import { addBulkClaims } from '../../../reducers/manage_users/manage_users';
+import { deleteUsers } from '../../../reducers/manage_users/manage_users';
+
+/*function getSorting(order, orderBy) {
+  return order === 'desc'
+    ? (a, b) => (b[orderBy].toLowerCase() < a[orderBy].toLowerCase() ? -1 : 1)
+    : (a, b) => (a[orderBy].toLowerCase() < b[orderBy].toLowerCase() ? -1 : 1);
+}*/
 
 function getSorting(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => (b[orderBy] < a[orderBy] ? -1 : 1)
-    : (a, b) => (a[orderBy] < b[orderBy] ? -1 : 1);
+  if (order === 'desc') {
+    return (a, b) => {
+      if(typeof a[orderBy] === "string") {
+        return (b[orderBy].toLowerCase() < a[orderBy].toLowerCase() ? -1 : 1)
+      } else if(typeof a[orderBy] === "boolean") {
+        return ((+b[orderBy]) - (+a[orderBy]) || a['name'].localeCompare(b['name']));
+      } else {
+        return (b[orderBy] < a[orderBy] ? -1 : 1)
+      }
+    }
+  } else {
+    return (a, b) => {
+      if(typeof a[orderBy] === "string") {
+        return (a[orderBy].toLowerCase() < b[orderBy].toLowerCase() ? -1 : 1)
+      } else if(typeof a[orderBy] === "boolean") {
+        return ((+a[orderBy]) - (+b[orderBy]) || a['name'].localeCompare(b['name']));
+      } else {
+        return (a[orderBy] < b[orderBy] ? -1 : 1)
+      }
+    }
+  }
 }
 
 const columnData = [
@@ -133,7 +157,7 @@ const toolbarStyles = theme => ({
 });
 
 let EnhancedTableToolbar = props => {
-  const { numSelected, classes, toolbarState, update, processing, processData } = props;
+  const { numSelected, classes, toolbarState, update, processing, processData, deleteData } = props;
 
   return (
     <Toolbar
@@ -225,19 +249,16 @@ let EnhancedTableToolbar = props => {
                 >Update</Button>
               </Tooltip>
               <Tooltip title="Delete Selection">
-                <IconButton aria-label="Delete">
+                <Button
+                  onClick={deleteData}
+                  disabled={processing} 
+                  aria-label="Delete">
                   <DeleteIcon />
-                </IconButton>
+                </Button>
               </Tooltip>
             </FormGroup>
           
-        ) : (
-          <Tooltip title="Filter list">
-            <IconButton aria-label="Filter list">
-              <FilterListIcon />
-            </IconButton>
-          </Tooltip>
-        )}
+        ) : null }
       </div> }
     </Toolbar>
   );
@@ -291,7 +312,6 @@ class EnhancedTable extends React.Component {
 
   handleSelectAllClick = (event, checked) => {
     if (checked) {
-      //this.setState({ selected: this.state.data.map(n => n.id) });
       this.props.updateSelectedUsers( this.props.data.map(n => n.id));
       return;
     }
@@ -342,7 +362,7 @@ class EnhancedTable extends React.Component {
   render() {
     const { classes } = this.props;
     const { page } = this.state;
-    const { rowsPerPage, data, selected, processing, processData, order, orderBy, loading, toolbarState, updateToolBarState } = this.props;
+    const { rowsPerPage, data, selected, processing, processData, deleteData, order, orderBy, loading, toolbarState, updateToolBarState } = this.props;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
     return (
@@ -354,6 +374,7 @@ class EnhancedTable extends React.Component {
           update={updateToolBarState}
           processing={processing}
           processData={processData}
+          deleteData={deleteData}
         />
         <div className={classes.tableWrapper}>
           <Table className={classes.table} aria-labelledby="tableTitle">
@@ -456,6 +477,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
  fetchData: () => dispatch(getUserData()),
  processData: () => dispatch(addBulkClaims()),
+ deleteData: () => dispatch(deleteUsers()),
  updateSelectedUsers: (users) => dispatch({ type: 'SELECTED_USERS_SET', payload: users }),
  reOrderUsers: (order, orderBy) => dispatch({ type: 'ORDER_USERS_SET', payload: { order, orderBy }}),
  reset: () => dispatch({ type: 'RESET_USERS' }),

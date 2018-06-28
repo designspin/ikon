@@ -21,7 +21,7 @@ export function getUserData() {
   return (dispatch, state) => {
     const allUsers = functions.httpsCallable('allUsers');
     dispatch({ type: 'TOGGLE_USERS_LOADING' });
-    return allUsers({ qty: state().manageUsersState.rowsPerPage }).then((result) => {
+    return allUsers({ qty: 1000 }).then((result) => {
       const users = result.data.users.map((user) => {
         const roles = ( user.customClaims && user.customClaims.roles ) ? user.customClaims.roles : { staff: false, client: false, admin: false};
 
@@ -61,6 +61,23 @@ export function addBulkClaims() {
   }
 }
 
+export function deleteUsers() {
+  return (dispatch, state) => {
+    const bulkDeleteUsers = functions.httpsCallable('bulkDeleteUsers');
+
+    dispatch({ type: 'TOGGLE_USERS_PROCESSING' });
+
+    const { selected } = state().manageUsersState;
+
+    return bulkDeleteUsers({ ids: selected }).then((result) => {
+      console.log(result);
+      dispatch({ type: 'NOTICE_MESSAGE_SET', payload: { variant: 'info', message: `Deleted ${selected.length} users`}});
+      dispatch({ type: 'REMOVE_USERS', payload: { selected }});
+      dispatch({ type: 'TOGGLE_USERS_PROCESSING'});
+    })
+  }
+}
+
 const applyUsersAccessState = (state, action) => {
   const { selected, toolbar } = action.payload;
   const { data } = state;
@@ -86,6 +103,16 @@ const applyUsersAccessState = (state, action) => {
     ...state,
     selected: [],
     data: newData
+  }
+}
+
+const applyRemoveUsers = (state, action) => {
+  const { selected } = action.payload;
+  const { data } = state;
+  return {
+    ...state,
+    selected: [],
+    data: data.filter((item) => selected.indexOf(item.id) === -1)
   }
 }
 
@@ -151,6 +178,8 @@ function manage_users_reducer(state = INITIAL_STATE, action) {
       return applyUsersToolbarState(state, action)
     case 'UPDATE_USERS_ACCESS_STATE':
       return applyUsersAccessState(state, action)
+    case 'REMOVE_USERS':
+      return applyRemoveUsers(state, action)
     default: return state;
   }
 }
