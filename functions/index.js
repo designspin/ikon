@@ -20,6 +20,25 @@ exports.setClaims = functions.https.onCall((data, context) => {
   })
 });
 
+exports.bulkDeleteUsers = functions.https.onCall((data, context) => {
+  const deleteUsers = () => {
+    return data.ids.map((userId) => {
+      const ref = admin.firestore().collection('user_roles').doc(`${userId}`);
+      return ref.delete().then(() => {
+        return admin.auth().deleteUser(userId)
+      })
+    })
+  }
+
+  return Promise.all([...deleteUsers()])
+  .then((values) => {
+    return values;
+  })
+  .catch((errors) => {
+    return errors;
+  });
+}) 
+
 exports.bulkClaims = functions.https.onCall((data, context) => {
   
   const setClaimsData = () => {
@@ -70,3 +89,36 @@ exports.allUsers = functions.https.onCall((data, context) => {
     })
   }
 });
+
+/*exports.makeDummyUsers = functions.https.onRequest((req, res) => {
+
+  const createUsers = () => {
+    fs.readFile('mock_users.json', 'utf8', (err, data) => {
+      if( err ) throw err;
+      const file = JSON.parse(data);
+
+      return file.map((item) => {
+        return admin.auth().createUser(item)
+        .then((record) => {
+          const ref = admin.firestore().collection('user_roles').doc(`${record.uid}`);
+          return ref.set({
+            admin: false,
+            staff: false,
+            client: false
+          })
+          .then(() => {
+            return admin.auth().setCustomUserClaims(record.uid, { roles: { admin: false, staff: false, client: false }});
+          })
+        })
+      })
+    })
+  }
+  
+  Promise.all([...createUsers()])
+  .then((values) => {
+    return res.redirect(303, "Done");
+  })
+  .catch((error) => {
+    return res.redirect(500, "error");
+  });
+}); */
