@@ -23,6 +23,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Progress from '@material-ui/core/CircularProgress';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 import Check from '@material-ui/icons/CheckCircle';
 import Cancel from '@material-ui/icons/Cancel';
@@ -152,20 +153,29 @@ let EnhancedTableToolbar = props => {
         )}
       </div>
       <div className={classes.spacer} />
+      { processing ? 
+        <div className={classes.actions}>
+          <Progress
+            size={30}
+            variant="indeterminate"
+          />
+        </div>
+      : 
       <div className={classes.actions}>
         {numSelected > 0 ? (
-          
             <FormGroup row>
               <FormControlLabel
                 control={
                   <Checkbox 
                     checked={toolbarState.admin}
                     onChange={(event) => {
-                      update({
-                        admin: event.target.checked,
-                        staff: toolbarState.staff,
-                        client: toolbarState.client
-                      })
+                      if(!processing) {
+                        update({
+                          admin: event.target.checked,
+                          staff: toolbarState.staff,
+                          client: toolbarState.client
+                        });
+                      }
                     }}
                     disabled={processing}
                   />
@@ -177,11 +187,13 @@ let EnhancedTableToolbar = props => {
                   <Checkbox 
                     checked={toolbarState.staff}
                     onChange={(event) => {
-                      update({
-                        admin: toolbarState.admin,
-                        staff: event.target.checked,
-                        client: toolbarState.client
-                      })
+                      if(!processing) {
+                        update({
+                          admin: toolbarState.admin,
+                          staff: event.target.checked,
+                          client: toolbarState.client
+                        });
+                      }
                     }}
                     disabled={processing}
                   />
@@ -193,11 +205,13 @@ let EnhancedTableToolbar = props => {
                   <Checkbox 
                     checked={toolbarState.client}
                     onChange={(event) => {
-                      update({
-                        admin: toolbarState.admin,
-                        staff: toolbarState.staff,
-                        client: event.target.checked
-                      })
+                      if(!processing) {
+                        update({
+                          admin: toolbarState.admin,
+                          staff: toolbarState.staff,
+                          client: event.target.checked
+                        });
+                      }
                     }}
                     disabled={processing}
                   />
@@ -224,7 +238,7 @@ let EnhancedTableToolbar = props => {
             </IconButton>
           </Tooltip>
         )}
-      </div>
+      </div> }
     </Toolbar>
   );
 };
@@ -449,12 +463,7 @@ const mapDispatchToProps = (dispatch) => ({
  updateToolBarState: (state) => dispatch({ type: 'USERS_TOOLBAR_STATE_SET', payload: state })
 });
 
-const authCondition = (authUser, authRoles) => {
-  return !!authUser && !!authRoles && authRoles.admin;
-}
-
 export default compose(
-  withAuthorisationRedirect(authCondition),
   withStyles(styles),
   connect(mapStateToProps, mapDispatchToProps),
 )(EnhancedTable);

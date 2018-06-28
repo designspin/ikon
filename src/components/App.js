@@ -7,7 +7,6 @@ import {
 } from 'react-router-dom';
 
 import withMaterial from '../withMaterial';
-
 import Drawer from './ResponsiveDrawer';
 
 import LandingPage from '../pages/Landing';
@@ -17,19 +16,11 @@ import PasswordForgetPage from '../pages/PasswordForget';
 import HomePage from '../pages/Home';
 import AccountPage from '../pages/Account';
 
-import DynamicComponent from '../utilities/dynamicImport';
+import ManageUsers from '../pages/admin/ManageUsers';
 
 import * as routes from '../constants/routes';
 
 import withAuthentication from './withAuthentication';
-
-const ManageUsers = props => (
-  <DynamicComponent
-    load={() => import(/* webpackChunkName: "manage_users" */'../pages/admin/ManageUsers')}
-  >
-  {Component => (Component === null ? <p>Loading...</p> : <Component {...props} />)}
-  </DynamicComponent>
-);
 
 const App = () => 
   <Router>

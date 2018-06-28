@@ -96,7 +96,7 @@ class ResponsiveDrawer extends React.Component {
             </Typography>
             
             {authUser
-              ? <UserMenu />
+              ? <UserMenu user={authUser} />
               : <Button 
                   component={ Link } 
                   to={routes.SIGN_IN} 

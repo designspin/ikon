@@ -54,10 +54,38 @@ export function addBulkClaims() {
 
     return bulkClaims({ ids: selected, claims: toolbar }).then((result) => {
       console.log(result);
-
+      dispatch({ type: 'NOTICE_MESSAGE_SET', payload: { variant: 'info', message: `Updated ${selected.length} users`}})
+      dispatch({ type: 'UPDATE_USERS_ACCESS_STATE', payload: { selected, toolbar }});
       dispatch({ type: 'TOGGLE_USERS_PROCESSING'});
     })
-    // dispatch({ type: 'TOGGLE_USERS_PROCESSING'});
+  }
+}
+
+const applyUsersAccessState = (state, action) => {
+  const { selected, toolbar } = action.payload;
+  const { data } = state;
+
+  const newData = data.map((item) => {
+    const index = selected.indexOf(item.id);
+
+    if(index > -1) {
+      selected.splice(index, 1);
+
+      return {
+        ...item,
+        admin: toolbar.admin,
+        staff: toolbar.staff,
+        client: toolbar.client
+      }
+    } else {
+      return item;
+    }
+  })
+
+  return {
+    ...state,
+    selected: [],
+    data: newData
   }
 }
 
@@ -121,6 +149,8 @@ function manage_users_reducer(state = INITIAL_STATE, action) {
       return applyRowsPerPage(state, action)
     case 'USERS_TOOLBAR_STATE_SET':
       return applyUsersToolbarState(state, action)
+    case 'UPDATE_USERS_ACCESS_STATE':
+      return applyUsersAccessState(state, action)
     default: return state;
   }
 }

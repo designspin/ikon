@@ -4,6 +4,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import Tooltip from '@material-ui/core/Tooltip';
 import { auth } from '../../firebase';
 
 import * as routes from '../../constants/routes';
@@ -24,16 +25,20 @@ class UserMenu extends Component {
   render() {
     const { anchorEl } = this.state;
     const open = Boolean(anchorEl);
-
+    const { displayName } = this.props.user;
     return [
-      <IconButton
+      <Tooltip
         key="user-menu-btn"
-        aria-owns={open ? 'user-menu' : null}
-        aria-haspopup="true"
-        onClick={this.handleMenu}
-        color="inherit">
-        <AccountCircle />
-      </IconButton>,
+        title={displayName}
+      >
+        <IconButton
+          aria-owns={open ? 'user-menu' : null}
+          aria-haspopup="true"
+          onClick={this.handleMenu}
+          color="inherit">
+          <AccountCircle />
+        </IconButton>
+      </Tooltip>,
       <Menu
         id="user-menu" 
         key="user-menu"
