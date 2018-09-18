@@ -49,9 +49,11 @@ exports.bulkClaims = functions.https.onCall((data, context) => {
         return ref.set(data.claims)
         .then(() => {
           success.push(userId);
+          return true;
         })
         .catch(() => {
           fail.push(userId);
+          return false;
         })
       });
   }
@@ -63,9 +65,11 @@ exports.bulkClaims = functions.https.onCall((data, context) => {
         return admin.auth().setCustomUserClaims(userId, { roles: data.claims })
         .then(() => {
           success.push(userId);
+          return true;
         })
         .catch(() => {
-          fail.push(userId)
+          fail.push(userId);
+          return false;
         })
       });
   }
@@ -88,6 +92,16 @@ exports.allUsers = functions.https.onCall((data, context) => {
       return usersResult;
     })
   }
+});
+
+exports.getUserById = functions.https.onCall((data, context) => {
+  return admin.auth.getUser(data.uid)
+    .then((userRecord) => { 
+      return userRecord;
+    })
+    .catch((error) => {
+      return error;
+    }) 
 });
 
 /*exports.makeDummyUsers = functions.https.onRequest((req, res) => {

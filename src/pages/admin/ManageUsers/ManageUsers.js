@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import classNames from 'classnames';
@@ -15,11 +16,9 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
-import FilterListIcon from '@material-ui/icons/FilterList';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Progress from '@material-ui/core/CircularProgress';
@@ -410,6 +409,7 @@ class EnhancedTable extends React.Component {
                     >
                       <TableCell padding="checkbox">
                         <Checkbox disabled={processing} checked={isSelected} />
+                        <Button component={Link} to={`/admin/edit_user/${n.id}`} >Edit User</Button>
                       </TableCell>
                       <TableCell component="td" scope="row" padding="none">
                         {n.name}

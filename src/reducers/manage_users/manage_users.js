@@ -53,7 +53,6 @@ export function addBulkClaims() {
     const { selected, toolbar } = state().manageUsersState;
 
     return bulkClaims({ ids: selected, claims: toolbar }).then((result) => {
-      console.log(result);
       dispatch({ type: 'NOTICE_MESSAGE_SET', payload: { variant: 'info', message: `Updated ${selected.length} users`}})
       dispatch({ type: 'UPDATE_USERS_ACCESS_STATE', payload: { selected, toolbar }});
       dispatch({ type: 'TOGGLE_USERS_PROCESSING'});
@@ -70,7 +69,6 @@ export function deleteUsers() {
     const { selected } = state().manageUsersState;
 
     return bulkDeleteUsers({ ids: selected }).then((result) => {
-      console.log(result);
       dispatch({ type: 'NOTICE_MESSAGE_SET', payload: { variant: 'info', message: `Deleted ${selected.length} users`}});
       dispatch({ type: 'REMOVE_USERS', payload: { selected }});
       dispatch({ type: 'TOGGLE_USERS_PROCESSING'});

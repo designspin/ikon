@@ -17,6 +17,7 @@ import HomePage from '../pages/Home';
 import AccountPage from '../pages/Account';
 
 import ManageUsers from '../pages/admin/ManageUsers';
+import EditUser from '../pages/admin/EditUser';
 
 import * as routes from '../constants/routes';
 
@@ -52,6 +53,10 @@ const App = () =>
       <Route
         exact path={routes.MANAGE_USERS}
         component={() => <ManageUsers />}
+      />
+      <Route 
+        exact path={routes.EDIT_USER}
+        component={() => <EditUser />}
       />
     </Drawer>
   </Router>
