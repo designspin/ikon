@@ -15,7 +15,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 import * as routes from '../constants/routes';
 
-import { auth } from '../firebase';
+import { auth, firebase } from '../firebase';
 
 const SignUpPage = ({ history }) =>
    <SoloFormWrapper>
@@ -59,9 +59,21 @@ class Form extends Component {
 
     auth.doCreateUserWithEmailAndPassword(email, passwordOne, username)
       .then(authUser => {
+        console.log(authUser);
         this.setState(() => ({ ...INITIAL_STATE}));
-        noticeMessage('success', 'Your account was created successfully, our admins will check your application and grant relevant access.')
-        history.push(routes.HOME);
+        //noticeMessage('success', 'Your account was created successfully, our admins will check your application and grant relevant access.')
+        return authUser;
+      })
+      .then(authUser => {
+        
+        return firebase.firebase.auth().currentUser.sendEmailVerification();
+      })
+      .then(() => {
+        return auth.doSignOut();
+      })
+      .then(() => {
+        noticeMessage('success', 'We\'ve created an account, check your email to confirm your account');
+        history.push(routes.LANDING);
       })
       .catch(error => {
         noticeMessage('error', error.message);

@@ -11,7 +11,6 @@ const NoticeBar = (props) => {
         horizontal: 'center',
       }}
       open={props.open}
-      autoHideDuration={6000}
       onClose={props.close}
     >
       <NoticeBarContent 

@@ -10,6 +10,7 @@ const INITIAL_STATE = {
   rowsPerPage: 5,
   processing: false,
   loading: false,
+  deleting: false,
   toolbar: {
     admin: false,
     staff: false,
@@ -45,7 +46,7 @@ export function getUserData() {
   }
 }
 
-export function addBulkClaims() {
+/*export function addBulkClaims() {
   return (dispatch, state) => {
     const bulkClaims = functions.httpsCallable('bulkClaims');
     dispatch({ type: 'TOGGLE_USERS_PROCESSING' });
@@ -58,9 +59,9 @@ export function addBulkClaims() {
       dispatch({ type: 'TOGGLE_USERS_PROCESSING'});
     })
   }
-}
+}*/
 
-export function deleteUsers() {
+/*export function deleteUsers() {
   return (dispatch, state) => {
     const bulkDeleteUsers = functions.httpsCallable('bulkDeleteUsers');
 
@@ -73,6 +74,33 @@ export function deleteUsers() {
       dispatch({ type: 'REMOVE_USERS', payload: { selected }});
       dispatch({ type: 'TOGGLE_USERS_PROCESSING'});
     })
+  }
+}*/
+
+export function addClaims(selectedIds, claims) {
+  return(dispatch, state) => {
+    const bulkClaims = functions.httpsCallable('bulkclaims');
+    dispatch({ type: 'TOGGLE_USERS_PROCESSING' });
+
+    return bulkClaims({ ids: [selectedIds], claims: claims }).then((result) => {
+      dispatch({ type: 'NOTICE_MESSAGE_SET', payload: { variant: 'info', message: `Updated ${selectedIds.length} users`}})
+      dispatch({ type: 'UPDATE_USERS_ACCESS_STATE', payload: { selectedIds, claims }});
+      dispatch({ type: 'TOGGLE_USERS_PROCESSING'});
+    })
+  }
+}
+
+export function deleteUsers(selectedIds) {
+  return (dispatch, state) => {
+    const bulkDeleteUsers = functions.httpsCallable('bulkDeleteUsers');
+
+    dispatch({ type: 'TOGGLE_USERS_DELETING' });
+
+    return bulkDeleteUsers({ ids: selectedIds }).then((result) => {
+      dispatch({ type: 'REMOVE_USERS', payload: { selectedIds }});
+      dispatch({ type: 'NOTICE_MESSAGE_SET', payload: { variant: 'info', message: `Deleted ${selectedIds.length} users`}});
+      dispatch({ type: 'TOGGLE_USERS_DELETING' });
+    });
   }
 }
 
@@ -105,12 +133,12 @@ const applyUsersAccessState = (state, action) => {
 }
 
 const applyRemoveUsers = (state, action) => {
-  const { selected } = action.payload;
+  const { selectedIds } = action.payload;
   const { data } = state;
   return {
     ...state,
     selected: [],
-    data: data.filter((item) => selected.indexOf(item.id) === -1)
+    data: data.filter((item) => selectedIds.indexOf(item.id) === -1)
   }
 }
 
@@ -144,6 +172,11 @@ const applyUsersToolbarState = (state, action) => ({
   }
 })
 
+const applyToggleUserDataRemoving = (state, action) => ({
+  ...state,
+  deleting: !state.deleting
+});
+
 const applyToggleUserDataProcessing = (state, action) => ({
   ...state,
   processing: !state.processing
@@ -170,6 +203,8 @@ function manage_users_reducer(state = INITIAL_STATE, action) {
       return applyToggleUserDataProcessing(state, action)
     case 'TOGGLE_USERS_LOADING':
       return applyToggleUsersLoading(state, action)
+    case 'TOGGLE_USERS_DELETING':
+      return applyToggleUserDataRemoving(state, action)
     case 'USERS_ROWS_PER_PAGE':
       return applyRowsPerPage(state, action)
     case 'USERS_TOOLBAR_STATE_SET':

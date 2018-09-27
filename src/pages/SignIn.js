@@ -73,8 +73,9 @@ class Form extends Component {
       auth.doSignInWithEmailAndPassword(email, password)
       .then(() => {
         this.setState(() => ({ ...INITIAL_STATE }));
+        
+        history.push(routes.ACCOUNT);
         noticeMessage('success', 'Log in success');
-        history.push(routes.HOME);
       })
       .catch(error => {
         noticeMessage('error', error.message );

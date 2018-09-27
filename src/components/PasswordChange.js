@@ -63,7 +63,7 @@ class Form extends Component {
         <Typography 
           gutterBottom
           variant="headline" 
-          component="h1">Password Change</Typography>
+          component="h2">Password Change</Typography>
         <TextField
           fullWidth
           required
