@@ -37,10 +37,11 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 import LinearProgress from '@material-ui/core/LinearProgress';
+import { Checkbox, Button } from '@material-ui/core';
 
 import { getUserData, deleteUsers, addClaims } from '../../../reducers/manage_users/manage_users';
+import RowDetail from './ManageUsersDetail';
 
-import { Checkbox, Button } from '@material-ui/core';
 
 const EditorTrueFalse = ({value, onValueChange}) => {
   const change = (event) => {
@@ -64,14 +65,6 @@ const TrueFalseProvider = props => (
     editorComponent={EditorTrueFalse}
     {...props}
   />
-);
-
-const RowDetail = ({ row }) => (
-  <div>
-    Details for
-    {' '}
-    {row.id}
-  </div>
 );
 
 const EditButton = ({ onExecute }) => (
@@ -171,20 +164,26 @@ class ManageUsersTable extends PureComponent {
     this.changePageSize = pageSize => this.setState({ pageSize });
     this.changeSearchValue = value => this.setState({ searchValue: value });
     this.changeSorting = sorting => this.setState({ sorting });
-    this.changeExpandedDetails = expandedRowIds => this.setState({ expandedRowIds });
+    this.changeExpandedDetails = (expandedRowIds) => {
+      this.setState({
+          expandedRowIds: [expandedRowIds[expandedRowIds.length - 1]]
+      });
+    };
     this.commitChanges = ({ changed, deleted}) => {
       let { rows } = this.state;
       
       if(changed) {
-        
         const user = changed[Object.keys(changed)[0]];
-        const { id, admin, staff, client } = user;
-        const claims = {
-          admin,
-          staff,
-          client
+
+        if(user) {
+          const { id, admin, staff, client } = user;
+          const claims = {
+            admin,
+            staff,
+            client
+          }
+          this.props.processData([id], claims);
         }
-        this.props.processData([id], claims).then(() => console.log("Alright Bruv!"));
       }
 
       this.setState({ deletingRows: deleted || getStateDeletingRows() });

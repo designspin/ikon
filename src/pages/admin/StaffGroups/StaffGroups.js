@@ -111,7 +111,7 @@ class StaffGroups extends Component {
     <React.Fragment>
      {groups.map((group) => {
         return (
-          <ExpansionPanel 
+          <ExpansionPanel key={group.id}
             expanded={expanded === group.id}
             onChange={this.onExpansionChange(group.id)}
           >
