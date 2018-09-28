@@ -79,10 +79,10 @@ export function getUserData() {
 
 export function addClaims(selectedIds, claims) {
   return(dispatch, state) => {
-    const bulkClaims = functions.httpsCallable('bulkclaims');
+    const bulkClaims = functions.httpsCallable('bulkClaims');
     dispatch({ type: 'TOGGLE_USERS_PROCESSING' });
 
-    return bulkClaims({ ids: [selectedIds], claims: claims }).then((result) => {
+    return bulkClaims({ ids: selectedIds, claims: claims }).then((result) => {
       dispatch({ type: 'NOTICE_MESSAGE_SET', payload: { variant: 'info', message: `Updated ${selectedIds.length} users`}})
       dispatch({ type: 'UPDATE_USERS_ACCESS_STATE', payload: { selectedIds, claims }});
       dispatch({ type: 'TOGGLE_USERS_PROCESSING'});
@@ -105,20 +105,18 @@ export function deleteUsers(selectedIds) {
 }
 
 const applyUsersAccessState = (state, action) => {
-  const { selected, toolbar } = action.payload;
+  const { selectedIds, claims } = action.payload;
   const { data } = state;
 
   const newData = data.map((item) => {
-    const index = selected.indexOf(item.id);
+    const index = selectedIds.indexOf(item.id);
 
     if(index > -1) {
-      selected.splice(index, 1);
-
       return {
         ...item,
-        admin: toolbar.admin,
-        staff: toolbar.staff,
-        client: toolbar.client
+        admin: claims.admin,
+        staff: claims.staff,
+        client: claims.client
       }
     } else {
       return item;

@@ -17,7 +17,7 @@ import HomePage from '../pages/Home';
 import AccountPage from '../pages/Account';
 
 import ManageUsers from '../pages/admin/ManageUsers';
-import EditUser from '../pages/admin/EditUser';
+import StaffGroups from '../pages/admin/StaffGroups';
 
 import * as routes from '../constants/routes';
 
@@ -55,8 +55,8 @@ const App = () =>
         component={() => <ManageUsers />}
       />
       <Route 
-        exact path={routes.EDIT_USER}
-        component={() => <EditUser />}
+        exact path={routes.STAFF_GROUPS}
+        component={() => <StaffGroups />}
       />
     </Drawer>
   </Router>

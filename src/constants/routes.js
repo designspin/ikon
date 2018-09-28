@@ -6,3 +6,4 @@ export const ACCOUNT = '/account';
 export const PASSWORD_FORGET = '/pw-forgot';
 export const MANAGE_USERS = '/admin/manage_users';
 export const EDIT_USER = '/admin/edit_user/:id';
+export const STAFF_GROUPS = '/admin/staff_groups';

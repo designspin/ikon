@@ -21,6 +21,9 @@ if(!firebase.apps.length) {
 const auth = firebase.auth();
 const functions = firebase.functions();
 const db = firebase.firestore();
+db.settings = {
+  timestampInSnapshots: true
+}
 const messaging = firebase.messaging();
 
 messaging.onMessage((payload) => {

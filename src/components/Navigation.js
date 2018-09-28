@@ -6,7 +6,7 @@ import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-
+import ListSubheader from '@material-ui/core/ListSubheader';
 import * as routes from '../constants/routes';
 
 const styles = theme => ({
@@ -14,8 +14,12 @@ const styles = theme => ({
 })
 
 const AdminItems = (props) =>
-    <List component="nav">
-      <ListItem component={Link} to={routes.MANAGE_USERS} button><ListItemText>Manage User Access</ListItemText></ListItem>
+    <List 
+      component="nav"
+      subheader={<ListSubheader component="div">Admin</ListSubheader>}
+    >
+      <ListItem component={Link} to={routes.MANAGE_USERS} button><ListItemText>Manage Users</ListItemText></ListItem>
+      <ListItem component={Link} to={routes.STAFF_GROUPS} button><ListItemText>Staff Groups</ListItemText></ListItem>
     </List>
 
 const authCondition = (authUser, authRoles) => {

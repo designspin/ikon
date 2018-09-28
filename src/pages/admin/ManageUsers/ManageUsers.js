@@ -11,6 +11,7 @@ import {
   IntegratedFiltering, 
   IntegratedPaging,
   RowDetailState } from '@devexpress/dx-react-grid';
+
 import { 
   Grid, 
   Table, 
@@ -171,10 +172,11 @@ class ManageUsersTable extends PureComponent {
     this.changeSearchValue = value => this.setState({ searchValue: value });
     this.changeSorting = sorting => this.setState({ sorting });
     this.changeExpandedDetails = expandedRowIds => this.setState({ expandedRowIds });
-    this.commitChanges = ({ added, changed, deleted}) => {
+    this.commitChanges = ({ changed, deleted}) => {
       let { rows } = this.state;
       
       if(changed) {
+        
         const user = changed[Object.keys(changed)[0]];
         const { id, admin, staff, client } = user;
         const claims = {
@@ -182,7 +184,7 @@ class ManageUsersTable extends PureComponent {
           staff,
           client
         }
-        this.props.processData(id, claims);
+        this.props.processData([id], claims).then(() => console.log("Alright Bruv!"));
       }
 
       this.setState({ deletingRows: deleted || getStateDeletingRows() });
@@ -351,7 +353,7 @@ const mapStateToProps = (state) => {
     //order: state.manageUsersState.order,
     //page: state.manageUsersState.page,
     //rowsPerPage: state.manageUsersState.rowsPerPage,
-    //processing: state.manageUsersState.processing,
+    processing: state.manageUsersState.processing,
     loading: state.manageUsersState.loading,
     deleting: state.manageUsersState.deleting,
     //toolbarState: state.manageUsersState.toolbar
