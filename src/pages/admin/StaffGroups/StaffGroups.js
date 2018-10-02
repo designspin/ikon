@@ -5,6 +5,9 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
+import FaceIcon from '@material-ui/icons/Face';
+import Avatar from '@material-ui/core/Avatar';
+import Chip from '@material-ui/core/Chip';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
@@ -15,6 +18,14 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { staff_groups as db } from '../../../firebase';
 
 const styles = theme => ({
+  flex: {
+    display: 'flex',
+    flexWrap: 'wrap'
+  },
+  chip: {
+    marginRight: theme.spacing.unit,
+    marginBottom: theme.spacing.unit
+  },
   paper: {
     ...theme.mixins.gutters(),
     paddingTop: theme.spacing.unit * 2,
@@ -41,15 +52,21 @@ class StaffGroups extends Component {
     this.onFocusGroup = this.onFocusGroup.bind(this);
     this.onAddGroup = this.onAddGroup.bind(this);
     this.onExpansionChange = this.onExpansionChange.bind(this);
+    this.updateUserGroups = this.updateUserGroups.bind(this);
   }
 
   componentDidMount() {
+    this.getUserGroups();
+    this.subscribeUserGroups();
+  }
+
+  getUserGroups() {
     db.getUserGroups()
     .then((collection) => {
-      const data = [];
+      const data = {};
 
       collection.forEach((doc) => {
-        data.push({ id: doc.id, data: doc.data()});
+        data[doc.id] = doc.data();
       })
 
       return data;
@@ -62,6 +79,20 @@ class StaffGroups extends Component {
     .catch((error) => {
       console.log(error);
     })
+  }
+
+  subscribeUserGroups() {
+    db.subscribeUserGroups(this.updateUserGroups)
+  }
+
+  updateUserGroups(snapshot) {
+    const data = {};
+    snapshot.forEach((doc) => {
+      data[doc.id] = doc.data();
+    })
+    this.setState({
+      groups: data
+    }) 
   }
 
   onFocusGroup() {
@@ -105,25 +136,43 @@ class StaffGroups extends Component {
   }
 
   renderGroups() {
+    const { classes } = this.props;
     const { expanded, groups } = this.state;
 
     return (
     <React.Fragment>
-     {groups.map((group) => {
-        return (
-          <ExpansionPanel key={group.id}
-            expanded={expanded === group.id}
-            onChange={this.onExpansionChange(group.id)}
+     {
+       Object.keys(groups).map((id) => 
+          <ExpansionPanel key={id}
+            expanded={expanded === id}
+            onChange={this.onExpansionChange(id)}
           >
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography>{ group.id.toUpperCase() }</Typography>
+              <Typography>{ id.toUpperCase() }</Typography>
             </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
-              <p>More detail here!</p>
+            <ExpansionPanelDetails className={classes.flex}>
+              {
+                (Object.keys(groups[id]).length)
+                ?
+                Object.keys(groups[id]).map(userId => 
+                    <Chip
+                      avatar={
+                        <Avatar>
+                          <FaceIcon/>
+                        </Avatar>
+                      }
+                      label={groups[id][userId]}
+                      key={userId}
+                      className={classes.chip}
+                    />
+                )
+                :
+                <Typography>No staff members assigned to this group.</Typography>
+              }
             </ExpansionPanelDetails>
           </ExpansionPanel>
-        );
-      })}
+        )
+    }
     </React.Fragment>
     )
   }
