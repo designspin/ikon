@@ -52,11 +52,16 @@ class StaffGroups extends Component {
     this.onFocusGroup = this.onFocusGroup.bind(this);
     this.onAddGroup = this.onAddGroup.bind(this);
     this.onExpansionChange = this.onExpansionChange.bind(this);
+    
     this.updateUserGroups = this.updateUserGroups.bind(this);
+    this.subscribeUserGroups = db.subscribeUserGroups(this.updateUserGroups);
   }
 
   componentDidMount() {
-    this.getUserGroups();
+    this.getUserGroups(this);
+  }
+
+  componentWillUnmount() {
     this.subscribeUserGroups();
   }
 
@@ -79,10 +84,6 @@ class StaffGroups extends Component {
     .catch((error) => {
       console.log(error);
     })
-  }
-
-  subscribeUserGroups() {
-    db.subscribeUserGroups(this.updateUserGroups)
   }
 
   updateUserGroups(snapshot) {

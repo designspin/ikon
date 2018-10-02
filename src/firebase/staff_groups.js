@@ -13,6 +13,19 @@ export const removeUserFromGroup = (id, name) =>
     [id]: firebase.firestore.FieldValue.delete()
   })
 
+export const removeFromAllGroups = (id) => {
+  const query = db.collection("staff_groups").where(id, '>', '');
+
+  return query.get()
+  .then((querySnapShot) => {
+    querySnapShot.forEach((doc) => {
+      doc.ref.update({
+        [id]: firebase.firestore.FieldValue.delete()
+      })
+    })
+  })
+}
+  
 export const getUserGroups = () =>
   db.collection("staff_groups").get()
 

@@ -28,15 +28,15 @@ class ManageUsersDetailRow extends Component {
     }
 
     this.updateUserGroups = this.updateUserGroups.bind(this);
+    this.subscribeUserGroups = db.subscribeUserGroups(this.updateUserGroups);
   }
 
   componentDidMount() {
     this.getUserGroups();
-    this.subscribeUserGroups();
   }
 
   componentWillUnmount() {
-    db.unsubscribeUserGroups();
+    this.subscribeUserGroups();
   }
 
   getUserGroups() {
@@ -58,10 +58,6 @@ class ManageUsersDetailRow extends Component {
     .catch((error) => {
       console.log(error);
     })
-  }
-
-  subscribeUserGroups() {
-    db.subscribeUserGroups(this.updateUserGroups)
   }
 
   updateUserGroups(snapshot) {

@@ -40,6 +40,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import { Checkbox, Button } from '@material-ui/core';
 
 import { getUserData, deleteUsers, addClaims } from '../../../reducers/manage_users/manage_users';
+import { staff_groups as db } from '../../../firebase';
 import RowDetail from './ManageUsersDetail';
 
 
@@ -170,7 +171,6 @@ class ManageUsersTable extends PureComponent {
       });
     };
     this.commitChanges = ({ changed, deleted}) => {
-      let { rows } = this.state;
       
       if(changed) {
         const user = changed[Object.keys(changed)[0]];
@@ -182,7 +182,9 @@ class ManageUsersTable extends PureComponent {
             staff,
             client
           }
-          this.props.processData([id], claims);
+          this.props.processData([id], claims).then(() => {
+            db.removeFromAllGroups(id);
+          });
         }
       }
 
@@ -197,7 +199,10 @@ class ManageUsersTable extends PureComponent {
         if (index > -1) {
           toDelete.push(rowId)
         }
-        this.props.deleteUsers(toDelete);
+        this.props.deleteUsers(toDelete).then(() => {
+          db.removeFromAllGroups(rowId);
+        });
+        
       });
       this.setState({ deletingRows: [] });
     };
