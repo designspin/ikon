@@ -2,7 +2,8 @@ import { db, firebase } from './firebase';
 
 export const createUserGroups = (name) => 
   db.collection("staff_groups").doc(name).set({})
-  
+
+// @param name == GroupName
 export const addUserToGroup = (id, name, username) =>
   db.collection("staff_groups").doc(name).update({
     [id]: username

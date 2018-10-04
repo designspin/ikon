@@ -20,6 +20,7 @@ const AdminItems = (props) =>
     >
       <ListItem component={Link} to={routes.MANAGE_USERS} button><ListItemText>Manage Users</ListItemText></ListItem>
       <ListItem component={Link} to={routes.STAFF_GROUPS} button><ListItemText>Staff Groups</ListItemText></ListItem>
+      <ListItem component={Link} to={routes.CREATE_CUSTOMERS} button><ListItemText>Manage Customers</ListItemText></ListItem>
     </List>
 
 const authCondition = (authUser, authRoles) => {

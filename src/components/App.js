@@ -18,6 +18,7 @@ import AccountPage from '../pages/Account';
 
 import ManageUsers from '../pages/admin/ManageUsers';
 import StaffGroups from '../pages/admin/StaffGroups';
+import CreateCustomers from '../pages/admin/CreateCustomer';
 
 import * as routes from '../constants/routes';
 
@@ -57,6 +58,10 @@ const App = () =>
       <Route 
         exact path={routes.STAFF_GROUPS}
         component={() => <StaffGroups />}
+      />
+      <Route 
+        exact path={routes.CREATE_CUSTOMERS}
+        component={() => <CreateCustomers />}
       />
     </Drawer>
   </Router>

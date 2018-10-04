@@ -2,9 +2,10 @@ import { auth, functions, db } from './firebase';
 import store from '../store';
 
 //Sign Up
-export const doCreateUserWithEmailAndPassword = (email, password, username) =>
+export const doCreateUserWithEmailAndPassword = (email, password, username, clientAccessRequired) =>
   auth.createUserWithEmailAndPassword(email, password)
   .then((data) => {
+    console.log(username);
     const fullname = username.toLowerCase();
 
     data.user.updateProfile({
@@ -18,7 +19,7 @@ export const doCreateUserWithEmailAndPassword = (email, password, username) =>
       roles: {
         admin: false,
         staff: false,
-        client: false
+        client: clientAccessRequired
       }
     })
     .catch((error) => {

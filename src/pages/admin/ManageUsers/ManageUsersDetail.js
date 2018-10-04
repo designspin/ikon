@@ -10,6 +10,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { withStyles } from '@material-ui/core/styles';
 
 import { staff_groups as db } from '../../../firebase';
+import { CircularProgress } from '@material-ui/core';
 
 const styles = theme => ({
   paper: {
@@ -105,14 +106,16 @@ class ManageUsersDetailRow extends Component {
     }
   }
 
-  renderList() {
+  renderGroupList() {
     const { id } = this.props.row;
     const { groups } = this.state;
 
     return (
         <List>
           <ListSubheader>Staff Groups</ListSubheader>
-          {
+          { 
+            (Object.keys(groups).length)
+            ?
             Object.keys(groups).map((groupId) => {
               const isMember = groups[groupId].member;
               const isUpdating = groups[groupId].updating;
@@ -133,6 +136,8 @@ class ManageUsersDetailRow extends Component {
                 </ListItem>
               )
             })
+            :
+            <ListItem><CircularProgress /></ListItem>
           }
         </List>
     );
@@ -150,7 +155,7 @@ class ManageUsersDetailRow extends Component {
           variant="subheading"
           component="h3"
         >{ row.name } - ( {Object.keys(row).filter((key) => row[key] === true ).toString() || 'unassigned'} ) </Typography>
-        { staff && this.renderList() }
+        { staff && this.renderGroupList() }
       </Paper>
     )
   }

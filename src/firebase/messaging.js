@@ -8,7 +8,7 @@ export const requestMessagingPermission = async () => {
     await messaging.requestPermission();
     const token = await messaging.getToken();
 
-    //Update user infor with notification tokens
+    //Update user info with notification tokens
     const uid = auth.currentUser.uid;
     const userInfoRef = db.collection('user_info').doc(uid);
     

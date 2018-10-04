@@ -154,8 +154,6 @@ class ManageUsersTable extends PureComponent {
     };
 
     const getStateRows = () => {
-      /*const { rows } = this.state;
-      return rows;*/
       return this.props.data;
     };
 

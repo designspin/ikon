@@ -3,27 +3,14 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import PasswordChangeForm from '../components/PasswordChange';
+import { PaperWithStyles } from '../components/wrappers';
 import { withAuthorisationRedirect as withAuthorisation } from '../components/withAuthorisation';
 import { messaging } from '../firebase';
-
-const paperStyles = theme => ({
-  paper: {
-    padding: theme.spacing.unit * 3,
-    marginBottom: theme.spacing.unit * 2
-  },
-})
-
-const StyledPaper = ({ children, classes }) =>
-  <Paper className={classes.paper}>{ children }</Paper>
-
-const PaperWithStyles = withStyles(paperStyles, {withTheme: true})(StyledPaper);
-
+import ClientProfile from '../components/account/ClientProfile';
 
 class AccountPage extends Component {
   
@@ -63,7 +50,7 @@ class AccountPage extends Component {
               <TextField
               fullWidth
               margin="dense"
-              label="Display Name"
+              label="Fullname"
               name="name"
               placeholder="Enter your user name"
               required
@@ -105,6 +92,7 @@ class AccountPage extends Component {
             </Grid>
           </Grid>
         </PaperWithStyles>
+        <ClientProfile wrapper={PaperWithStyles} />
         <PaperWithStyles>
           <PasswordChangeForm />
         </PaperWithStyles>

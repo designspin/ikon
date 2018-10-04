@@ -4,6 +4,7 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 import FaceIcon from '@material-ui/icons/Face';
 import Avatar from '@material-ui/core/Avatar';
@@ -13,7 +14,10 @@ import { withStyles } from '@material-ui/core/styles';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import DeleteIcon from '@material-ui/icons/Delete';
+import Divider from '@material-ui/core/Divider';
 
 import { staff_groups as db } from '../../../firebase';
 
@@ -171,6 +175,12 @@ class StaffGroups extends Component {
                 <Typography>No staff members assigned to this group.</Typography>
               }
             </ExpansionPanelDetails>
+            <Divider />
+            <ExpansionPanelActions>
+              <IconButton aria-label="delete">
+                <DeleteIcon />
+              </IconButton>
+            </ExpansionPanelActions>
           </ExpansionPanel>
         )
     }

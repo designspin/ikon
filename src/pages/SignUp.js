@@ -8,6 +8,8 @@ import {
  } from 'react-router-dom';
 
 import TextField from '@material-ui/core/TextField';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import CheckBox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { SoloFormWrapper } from '../components/wrappers';
@@ -27,6 +29,7 @@ const INITIAL_STATE = {
   email: '',
   passwordOne: '',
   passwordTwo: '',
+  clientAccessRequired: false
 }
 
 const byPropKey = (propertyName, value) => () => ({
@@ -45,11 +48,16 @@ class Form extends Component {
     this.state = { ...INITIAL_STATE };
   }
 
+  handleChange = name => event => {
+    this.setState({ [name]: event.target.checked })
+  }
+
   onSubmit = (event) => {
     const {
       username,
       email,
       passwordOne,
+      clientAccessRequired
     } = this.state;
 
     const {
@@ -57,7 +65,7 @@ class Form extends Component {
       noticeMessage
     } = this.props;
 
-    auth.doCreateUserWithEmailAndPassword(email, passwordOne, username)
+    auth.doCreateUserWithEmailAndPassword(email, passwordOne, username, clientAccessRequired)
       .then(authUser => {
         console.log(authUser);
         this.setState(() => ({ ...INITIAL_STATE}));
@@ -65,7 +73,7 @@ class Form extends Component {
         return authUser;
       })
       .then(authUser => {
-        
+        firebase
         return firebase.firebase.auth().currentUser.sendEmailVerification();
       })
       .then(() => {
@@ -87,13 +95,14 @@ class Form extends Component {
       email,
       passwordOne,
       passwordTwo,
+      clientAccessRequired
     } = this.state;
 
     const isInvalid =
       passwordOne !== passwordTwo ||
       passwordOne === '' ||
       email === '' ||
-      username === '';
+      username === '' || !/[a-zA-Z]+\s{1}[a-zA-Z]+/.test(username);
     
     const { classes } = this.props;
 
@@ -113,6 +122,8 @@ class Form extends Component {
           placeholder="Fullname"
           value={username}
           onChange={event => this.setState(byPropKey('username', event.target.value))}
+          error={username.length > 0 && !/[a-zA-Z]+\s{1}[a-zA-Z]+/.test(username)}
+          helperText="Firstname and Sirname separated by a space"
         />
         <TextField
           fullWidth
@@ -143,7 +154,17 @@ class Form extends Component {
           value={passwordTwo}
           onChange={event => this.setState(byPropKey('passwordTwo', event.target.value))}
         />
-
+        <FormControlLabel
+          control={
+            <CheckBox
+              checked={clientAccessRequired}
+              onChange={this.handleChange('clientAccessRequired')}
+              value={clientAccessRequired}
+              color="primary"
+            />
+          }
+          label="Need Event Cover? ( Client Account )"
+        /><br/>
         <Button 
           disabled={isInvalid}
           classes={{ root: classes.button }}
