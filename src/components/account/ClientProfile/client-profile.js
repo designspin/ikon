@@ -6,6 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
+import { client_profile as db, auth } from '../../../firebase';
 
 validators.isPhone = value => /^(?=.*\d)[\d ]+$/.test(value);
 validators.isAdr = value => /^[\w\-\s]+$/.test(value);
@@ -17,7 +18,95 @@ const customMessageMap = Object.assign(messageMap, {
 
 class ClientProfile extends Component {
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      loading: false,
+      phone: '',
+      companyName: '',
+      streetAdr: '',
+      adr2: '',
+      townCity: '',
+      postCode: ''
+    }
+
+    this.form = React.createRef();
+  }
+
+  updateFormState() {
+    this.form.current.setState((state) => {
+
+      const fieldsArray = Object.keys(state.fields).map((prop) => {
+        return {
+          [prop]: {
+            ...state.fields[prop],
+            value: this.state[prop]
+          }
+        }
+      });
+
+      const fields = fieldsArray.reduce((obj, item) => {
+        const key = Object.keys(item)[0];
+        obj[key] = item[key];
+        return obj;
+      }, {});
+      
+      return {
+        fields 
+      }
+    });
+  }
+
+  componentDidMount() {
+    const id = auth.getUID();
+
+    this.setState({
+      loading: true
+    });
+  
+    db.getClientProfile(id)
+      .then((doc) => {
+        if(doc.exists) {
+          this.setState({
+            loading: false,
+            ...doc.data()
+          }, () => {
+           this.updateFormState();
+          });
+        } else {
+          this.setState({
+            loading: false
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  submitProfile = (values, pristineValues) => {
+    const id = auth.getUID();
+
+    this.setState({
+      loading: true,
+      ...values
+    });
+
+    db.saveClientProfile(id, values)
+      .then(() => {
+        this.setState({
+          loading: false
+        })
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   render() {
+    const { phone, companyName, streetAdr, adr2, townCity, postCode, loading } = this.state;
+    
     return (
       <PaperWithStyles>
         <Typography
@@ -32,11 +121,13 @@ class ClientProfile extends Component {
         </Typography>
         <Divider style={{ marginBottom: "40px"}} />
         <MaterialUIForm
+          ref={this.form}
           autoComplete="off"
           validation={{
             messageMap: customMessageMap,
             validators
           }}
+          onSubmit={this.submitProfile}
         >
           <Grid container spacing={24}>
             <Grid item xs={12} sm={6}>
@@ -52,9 +143,10 @@ class ClientProfile extends Component {
               placeholder="Phone Number"
               type="text"
               name="phone"
-              value=""
+              value={phone}
               data-validators="isPhone, isRequired"
               margin="dense"
+              disabled={this.state.loading}
             />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -70,9 +162,10 @@ class ClientProfile extends Component {
               placeholder="Company Name"
               type="text"
               name="companyName"
-              value=""
+              value={companyName}
               data-validators="isRequired"
               margin="dense"
+              disabled={this.state.loading}
             />
             <TextField
               fullWidth
@@ -80,19 +173,21 @@ class ClientProfile extends Component {
               placeholder="Street Address"
               type="text"
               name="streetAdr"
-              value=""
+              value={streetAdr}
               data-validators="isAdr, isRequired"
               margin="dense"
+              disabled={this.state.loading}
             />
             <TextField
               fullWidth
               label="Address Line 2"
               placeholder="Address Line 2"
               type="text"
-              name="adr1"
-              value=""
+              name="adr2"
+              value={adr2}
               data-validators="isAdr"
               margin="dense"
+              disabled={this.state.loading}
             /> 
             <TextField
               fullWidth
@@ -100,9 +195,10 @@ class ClientProfile extends Component {
               placeholder="Town / City"
               type="text"
               name="townCity"
-              value=""
+              value={townCity}
               data-validators="isAdr, isRequired"
               margin="dense"
+              disabled={this.state.loading}
             />
             <TextField
               fullWidth
@@ -110,9 +206,10 @@ class ClientProfile extends Component {
               placeholder="Post Code"
               type="text"
               name="postCode"
-              value=""
+              value={postCode}
               data-validators="isAdr, isRequired"
               margin="dense"
+              disabled={this.state.loading}
             />
             </Grid>
           </Grid>

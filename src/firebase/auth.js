@@ -1,6 +1,9 @@
 import { auth, functions, db } from './firebase';
 import store from '../store';
 
+export const getUID = () =>
+  auth.currentUser.uid;
+
 //Sign Up
 export const doCreateUserWithEmailAndPassword = (email, password, username, clientAccessRequired) =>
   auth.createUserWithEmailAndPassword(email, password)

@@ -32,6 +32,3 @@ export const getUserGroups = () =>
 
 export const subscribeUserGroups = (callback) => 
   db.collection("staff_groups").onSnapshot(querySnapshot => callback(querySnapshot))
-
-export const unsubscribeUserGroups = () =>
-  db.collection("staff_groups").onSnapshot(function(){})
