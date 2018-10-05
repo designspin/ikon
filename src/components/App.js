@@ -18,7 +18,8 @@ import AccountPage from '../pages/Account';
 
 import ManageUsers from '../pages/admin/ManageUsers';
 import StaffGroups from '../pages/admin/StaffGroups';
-import CreateCustomers from '../pages/admin/CreateCustomer';
+
+import ClientEventApp from '../components/account/BookEvent';
 
 import * as routes from '../constants/routes';
 
@@ -60,8 +61,8 @@ const App = () =>
         component={() => <StaffGroups />}
       />
       <Route 
-        exact path={routes.CREATE_CUSTOMERS}
-        component={() => <CreateCustomers />}
+        exact path={routes.CLIENT_EVENT_APPLICATION}
+        component={() => <ClientEventApp />}
       />
     </Drawer>
   </Router>

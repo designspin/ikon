@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import MaterialUIForm, { messageMap, validators } from 'material-ui-form';
 import { PaperWithStyles } from '../../wrappers';
 import Typography from '@material-ui/core/Typography';
@@ -59,7 +59,7 @@ class ClientProfile extends Component {
   }
 
   componentDidMount() {
-    const id = auth.getUID();
+    const id = (this.props.id) ? this.props.id : auth.getUID();
 
     this.setState({
       loading: true
@@ -86,7 +86,7 @@ class ClientProfile extends Component {
   }
 
   submitProfile = (values, pristineValues) => {
-    const id = auth.getUID();
+    const id = (this.props.id) ? this.props.id : auth.getUID();
 
     this.setState({
       loading: true,
@@ -104,21 +104,42 @@ class ClientProfile extends Component {
       });
   }
 
-  render() {
-    const { phone, companyName, streetAdr, adr2, townCity, postCode, loading } = this.state;
-    
-    return (
+  renderWrapper() {
+    const { readonly } = this.props;
+
+    return (readonly)
+    ?
+    (
+      <Fragment>
+        {this.renderForm()}
+      </Fragment>
+    )
+    :
+    (
       <PaperWithStyles>
+        {this.renderForm()}
+      </PaperWithStyles>
+    );
+  }
+
+  renderForm() {
+    const { readonly } = this.props;
+    const { phone, companyName, streetAdr, adr2, townCity, postCode, loading } = this.state;
+
+    return (
+      <Fragment>
         <Typography
             gutterBottom
             variant="headline"
             component="h2">Client Profile</Typography>
-        <Typography
-          gutterBottom
-          variant="body1"
-          component="p">
-          {'Information provided here will be used in relation to any event bookings'}
-        </Typography>
+        { !readonly &&
+          <Typography
+            gutterBottom
+            variant="body1"
+            component="p">
+            {'Information provided here will be used in relation to any event bookings'}
+          </Typography>
+        }
         <Divider style={{ marginBottom: "40px"}} />
         <MaterialUIForm
           ref={this.form}
@@ -146,7 +167,7 @@ class ClientProfile extends Component {
               value={phone}
               data-validators="isPhone, isRequired"
               margin="dense"
-              disabled={this.state.loading}
+              disabled={(readonly) ? true : loading}
             />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -165,7 +186,7 @@ class ClientProfile extends Component {
               value={companyName}
               data-validators="isRequired"
               margin="dense"
-              disabled={this.state.loading}
+              disabled={(readonly) ? true : loading}
             />
             <TextField
               fullWidth
@@ -176,7 +197,7 @@ class ClientProfile extends Component {
               value={streetAdr}
               data-validators="isAdr, isRequired"
               margin="dense"
-              disabled={this.state.loading}
+              disabled={(readonly) ? true : loading}
             />
             <TextField
               fullWidth
@@ -187,7 +208,7 @@ class ClientProfile extends Component {
               value={adr2}
               data-validators="isAdr"
               margin="dense"
-              disabled={this.state.loading}
+              disabled={(readonly) ? true : loading}
             /> 
             <TextField
               fullWidth
@@ -198,7 +219,7 @@ class ClientProfile extends Component {
               value={townCity}
               data-validators="isAdr, isRequired"
               margin="dense"
-              disabled={this.state.loading}
+              disabled={(readonly) ? true : loading}
             />
             <TextField
               fullWidth
@@ -209,17 +230,23 @@ class ClientProfile extends Component {
               value={postCode}
               data-validators="isAdr, isRequired"
               margin="dense"
-              disabled={this.state.loading}
+              disabled={(readonly) ? true : loading}
             />
             </Grid>
           </Grid>
-          <Button
-            variant="outlined" 
-            color="primary"  
-            type="submit">Save</Button>
+          {!readonly &&
+            <Button
+              variant="outlined" 
+              color="primary"  
+              type="submit">Save</Button>
+          }
         </MaterialUIForm>
-      </PaperWithStyles>
+      </Fragment>
     )
+  }
+
+  render() {
+    return this.renderWrapper();
   }
 } 
 

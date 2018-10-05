@@ -20,7 +20,6 @@ const AdminItems = (props) =>
     >
       <ListItem component={Link} to={routes.MANAGE_USERS} button><ListItemText>Manage Users</ListItemText></ListItem>
       <ListItem component={Link} to={routes.STAFF_GROUPS} button><ListItemText>Staff Groups</ListItemText></ListItem>
-      <ListItem component={Link} to={routes.CREATE_CUSTOMERS} button><ListItemText>Manage Customers</ListItemText></ListItem>
     </List>
 
 const authCondition = (authUser, authRoles) => {
@@ -29,7 +28,19 @@ const authCondition = (authUser, authRoles) => {
 
 const AuthorisedAdminItems = withAuthorisation(authCondition)(AdminItems);
 
+const ClientItems = (props) => 
+  <List
+    component="nav"
+    subheader={<ListSubheader component="div">Client</ListSubheader>}
+  >
+    <ListItem component={Link} to={routes.CLIENT_EVENT_APPLICATION} button><ListItemText>Book An Event</ListItemText></ListItem>
+  </List>
 
+const clientAuthCondition = (authUser, authRoles) => {
+  return authUser && authRoles && authRoles.client;
+}
+
+const AuthorisedClientItems = withAuthorisation(clientAuthCondition)(ClientItems);
 
 const Navigation = (props) => {
   const { classes } = props;
@@ -41,6 +52,7 @@ const Navigation = (props) => {
         <ListItem component={Link} to={routes.LANDING} button><ListItemText>Home</ListItemText></ListItem>
       </List>
       <AuthorisedAdminItems />
+      <AuthorisedClientItems />
     </div>
   );
 }

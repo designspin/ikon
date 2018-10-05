@@ -7,4 +7,4 @@ export const PASSWORD_FORGET = '/pw-forgot';
 export const MANAGE_USERS = '/admin/manage_users';
 export const EDIT_USER = '/admin/edit_user/:id';
 export const STAFF_GROUPS = '/admin/staff_groups';
-export const CREATE_CUSTOMERS = '/admin/manage_customers';
+export const CLIENT_EVENT_APPLICATION = '/client/event_application';

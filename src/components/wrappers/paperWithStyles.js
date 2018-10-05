@@ -9,8 +9,8 @@ const paperStyles = theme => ({
   },
 })
 
-const StyledPaper = ({ children, classes }) =>
-  <Paper className={classes.paper}>{ children }</Paper>
+const StyledPaper = ({ children, classes, elevation }) =>
+  <Paper elevation={elevation} className={classes.paper}>{ children }</Paper>
 
 const PaperWithStyles = withStyles(paperStyles, {withTheme: true})(StyledPaper);
 
